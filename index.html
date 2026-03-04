@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AOG – Akıllı Orman Gözlemcisi</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #1a4a1e;
+    --green-mid: #2d6a32;
+    --green-light: #4a9e52;
+    --green-pale: #e8f5e9;
+    --red: #E12A29;
+    --red-light: #fdecea;
+    --white: #ffffff;
+    --off-white: #f9faf7;
+    --gray-100: #f0f2ee;
+    --gray-300: #cdd4c5;
+    --gray-500: #7a8c74;
+    --gray-800: #2a3328;
+    --text: #1e2b1f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ─── SIDEBAR ─────────────────────────── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 220px;
+    height: 100vh;
+    background: var(--white);
+    border-right: 1px solid var(--gray-100);
+    display: flex;
+    flex-direction: column;
+    padding: 36px 0 32px;
+    z-index: 100;
+    box-shadow: 2px 0 20px rgba(0,0,0,0.04);
+  }
+
+  .logo-wrap {
+    padding: 0 24px 32px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .logo-wrap img {
+    width: 160px;
+    display: block;
+  }
+
+  .logo-subtitle {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  nav {
+    flex: 1;
+    padding: 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 24px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--gray-500);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+  }
+
+  nav a:hover, nav a.active {
+    color: var(--green-dark);
+    border-left-color: var(--green-light);
+    background: var(--green-pale);
+  }
+
+  nav a .nav-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+    flex-shrink: 0;
+  }
+
+  .sidebar-badge {
+    margin: 0 24px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+    border-radius: 10px;
+    color: white;
+    font-size: 11.5px;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  .sidebar-badge strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 3px;
+  }
+
+  /* ─── MAIN ─────────────────────────────── */
+  .main {
+    margin-left: 220px;
+    min-height: 100vh;
+  }
+
+  /* ─── HERO ─────────────────────────────── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: var(--off-white);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 70% 50%, rgba(74,158,82,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 90% 20%, rgba(225,42,41,0.05) 0%, transparent 60%);
+  }
+
+  .hero-tree-bg {
+    position: absolute;
+    right: -40px;
+    bottom: 0;
+    width: 55%;
+    height: 100%;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 400'%3E%3Cpath fill='%231a4a1e' d='M150 10 L240 160 L200 160 L280 290 L200 290 L230 380 L70 380 L100 290 L20 290 L100 160 L60 160 Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: contain;
+  }
+
+  .hero-content {
+    position: relative;
+    padding: 80px 72px;
+    max-width: 680px;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--green-pale);
+    border: 1px solid rgba(74,158,82,0.2);
+    color: var(--green-dark);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+
+  .hero-tag-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green-light);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 4.5vw, 62px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--green-dark);
+    margin-bottom: 12px;
+  }
+
+  .hero h1 span {
+    color: var(--red);
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--gray-500);
+    line-height: 1.65;
+    margin-bottom: 44px;
+    max-width: 520px;
+    font-weight: 300;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: var(--green-dark);
+    color: white;
+    padding: 13px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary:hover {
+    background: var(--green-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(26,74,30,0.2);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--green-dark);
+    padding: 13px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1.5px solid var(--gray-300);
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--green-light);
+    background: var(--green-pale);
+  }
+
+  .hero-stats {
+    position: absolute;
+    right: 72px;
+    bottom: 72px;
+    display: flex;
+    gap: 28px;
+  }
+
+  .stat {
+    text-align: center;
+    background: white;
+    border: 1px solid var(--gray-100);
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--green-dark);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── SECTIONS ─────────────────────────── */
+  section {
+    padding: 96px 72px;
+  }
+
+  section:nth-child(even) {
+    background: var(--off-white);
+  }
+
+  .section-tag {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 3vw, 40px);
+    font-weight: 700;
+    color: var(--green-dark);
+    line-height: 1.2;
+    max-width: 580px;
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    font-size: 16px;
+    color: var(--gray-500);
+    line-height: 1.7;
+    max-width: 620px;
+    margin-bottom: 56px;
+    font-weight: 300;
+  }
+
+  /* ─── ABOUT ─────────────────────────────── */
+  #hakkinda .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 48px;
+  }
+
+  .about-card {
+    background: white;
+    border: 1px solid var(--gray-100);
+    border-radius: 16px;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .about-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+  }
+
+  .about-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--green-light), var(--green-dark));
+  }
+
+  .about-card-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    font-size: 22px;
+  }
+
+  .about-card-icon.green { background: var(--green-pale); }
+  .about-card-icon.red { background: var(--red-light); }
+
+  .about-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-bottom: 10px;
+  }
+
+  .about-card p {
+    font-size: 14.5px;
+    color: var(--gray-500);
+    line-height: 1.65;
+  }
+
+  /* ─── KILAVUZ ────────────────────────────── */
+  #kilavuz .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+
+  .step {
+    display: flex;
+    gap: 32px;
+    position: relative;
+    padding-bottom: 40px;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  .step-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 48px;
+  }
+
+  .step-num {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--green-dark);
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-line {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(to bottom, var(--green-light), var(--gray-100));
+    margin-top: 8px;
+  }
+
+  .step-body {
+    background: white;
+    border: 1px solid var(--gray-100);
+    border-radius: 14px;
+    padding: 26px 30px;
+    flex: 1;
+    margin-bottom: 40px;
+  }
+
+  .step:last-child .step-body { margin-bottom: 0; }
+
+  .step-body h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+  }
+
+  .step-body p {
+    font-size: 14.5px;
+    color: var(--gray-500);
+    line-height: 1.65;
+  }
+
+  .step-body .note {
+    display: inline-block;
+    margin-top: 12px;
+    background: var(--green-pale);
+    color: var(--green-dark);
+    font-size: 12.5px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  /* ─── HEDEFLER ────────────────────────────── */
+  #hedefler .goals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .goal-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    border: 1px solid var(--gray-100);
+    transition: all 0.25s;
+  }
+
+  .goal-card:hover {
+    border-color: var(--green-light);
+    box-shadow: 0 6px 24px rgba(45,106,50,0.1);
+    transform: translateY(-2px);
+  }
+
+  .goal-card .goal-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .goal-card h3 {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--green-dark);
+    margin-bottom: 10px;
+  }
+
+  .goal-card p {
+    font-size: 13.5px;
+    color: var(--gray-500);
+    line-height: 1.65;
+  }
+
+  .goal-tag {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .goal-tag.tekno { background: #fff3e0; color: #e65100; }
+  .goal-tag.cevre { background: var(--green-pale); color: var(--green-dark); }
+  .goal-tag.bilim { background: #e3f2fd; color: #0d47a1; }
+
+  /* ─── İLETİŞİM ────────────────────────────── */
+  #iletisim .contact-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  .contact-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--green-dark);
+    margin-bottom: 18px;
+    font-weight: 700;
+  }
+
+  .contact-info p {
+    font-size: 14.5px;
+    color: var(--gray-500);
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .contact-item-icon {
+    width: 38px; height: 38px;
+    background: var(--green-pale);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .contact-item-text {
+    font-size: 13.5px;
+    color: var(--gray-800);
+    font-weight: 500;
+  }
+
+  .contact-item-label {
+    font-size: 11px;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+
+  .contact-form {
+    background: white;
+    border: 1px solid var(--gray-100);
+    border-radius: 18px;
+    padding: 40px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gray-800);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--gray-100);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--off-white);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--green-light);
+    background: white;
+  }
+
+  .form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .form-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--green-dark);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .form-submit:hover {
+    background: var(--green-mid);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(26,74,30,0.2);
+  }
+
+  /* ─── FOOTER ────────────────────────────── */
+  footer {
+    background: var(--green-dark);
+    color: rgba(255,255,255,0.7);
+    padding: 40px 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+
+  footer strong { color: white; }
+
+  footer .footer-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  footer .footer-links a {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 12.5px;
+    transition: color 0.2s;
+  }
+
+  footer .footer-links a:hover { color: white; }
+
+  /* ─── RESPONSIVE ────────────────────────── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    section { padding: 64px 28px; }
+    .hero-content { padding: 64px 28px; }
+    .hero-stats { right: 28px; bottom: 28px; }
+    #hakkinda .about-grid,
+    #hedefler .goals-grid,
+    #iletisim .contact-wrap { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 14px; text-align: center; padding: 32px 24px; }
+    .hero-stats { position: static; flex-wrap: wrap; margin-top: 48px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ─────────────────────────── -->
+<aside class="sidebar">
+  <div class="logo-wrap">
+    <svg viewBox="0 0 1696 608" style="width:160px;display:block;">
+      <!-- Minimal AOG text logo recreation in green/red -->
+      <rect width="1696" height="608" fill="white"/>
+      <!-- Green tree icon -->
+      <ellipse cx="200" cy="260" rx="160" ry="140" fill="#2d6a32" opacity="0.9"/>
+      <ellipse cx="200" cy="180" rx="120" ry="100" fill="#4a9e52" opacity="0.9"/>
+      <ellipse cx="200" cy="110" rx="80" ry="70" fill="#2d6a32" opacity="0.9"/>
+      <rect x="180" y="360" width="40" height="80" fill="#1a4a1e"/>
+      <!-- AOG letters -->
+      <text x="420" y="420" font-family="Georgia,serif" font-weight="900" font-size="280" fill="#1a4a1e">AOG</text>
+    </svg>
+    <div class="logo-subtitle">Akıllı Orman Gözlemcisi</div>
+  </div>
+
+  <nav>
+    <a href="#hero" class="active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      Ana Sayfa
+    </a>
+    <a href="#hakkinda">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      Proje Hakkında
+    </a>
+    <a href="#kilavuz">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      Kullanım Kılavuzu
+    </a>
+    <a href="#hedefler">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      Hedefler
+    </a>
+    <a href="#iletisim">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      İletişim
+    </a>
+  </nav>
+
+  <div class="sidebar-badge">
+    <strong>🏆 Yarışma Projesi</strong>
+    TÜBİTAK & TEKNOFEST için geliştirilmiştir
+  </div>
+</aside>
+
+<!-- ─── MAIN ─────────────────────────────── -->
+<main class="main">
+
+  <!-- HERO -->
+  <section id="hero" class="hero" style="padding:0;">
+    <div class="hero-bg"></div>
+    <div class="hero-tree-bg"></div>
+    <div class="hero-content">
+      <div class="hero-tag">
+        <span class="hero-tag-dot"></span>
+        IoT · Çevre · Teknoloji
+      </div>
+      <h1>Ormanları <span>Yangından</span><br>Koruyan Sistem</h1>
+      <p class="hero-sub">
+        AOG, düşük maliyetli IoT sensörleri ve doğal yangın geciktirici kaplama ile orman yangınlarını erken tespit eden akıllı bir gözlem sistemidir.
+      </p>
+      <div class="hero-actions">
+        <a href="#hakkinda" class="btn-primary">Projeyi Keşfet</a>
+        <a href="#kilavuz" class="btn-secondary">Kullanım Kılavuzu</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">5 km</div>
+        <div class="stat-label">LoRa Menzili</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">6 ay</div>
+        <div class="stat-label">Kesintisiz Çalışma</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Doğal Kaplama<br>Malzemesi</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HAKKINDA -->
+  <section id="hakkinda">
+    <div class="section-tag">Proje Hakkında</div>
+    <h2 class="section-title">AOG Nedir ve Nasıl Çalışır?</h2>
+    <p class="section-desc">
+      Akıllı Orman Gözlemcisi (AOG), ağaç gövdelerine uygulanan doğal yangın geciktirici kaplama ile elektronik erken uyarı sistemini bir araya getiren bütüncül bir çözümdür. Sistem, düşük maliyeti ve kolay kurulumu sayesinde geniş ormanlık alanlarda hızla yaygınlaştırılabilir.
+    </p>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-card-icon green">🌿</div>
+        <h3>Doğal Yangın Geciktirici Kaplama</h3>
+        <p>Aloe vera, pirinç kabuğu külü ve yumurta kabuğu külü karışımından oluşan doğal kaplama, ağaç gövdelerine uygulanarak yangının yayılma hızını önemli ölçüde yavaşlatır. Çevreye uyumlu ve düşük maliyetli bir çözümdür.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon green">⚡</div>
+        <h3>Elektronik Erken Uyarı</h3>
+        <p>ESP32-S3 mikrodenetleyici ve MAX6675 termokupl sensörü, ağaç yüzeyindeki anlık sıcaklık verilerini toplar. Tehlikeli bir artış algılandığında Ra-02 LoRa modülü aracılığıyla 1-5 km menzilinde uyarı iletilir.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon red">🔋</div>
+        <h3>Uzun Ömürlü & Bakımsız</h3>
+        <p>Powerbank ile beslenen sistem, 6 aya kadar kesintisiz çalışabilir. Su geçirmez kutu içinde toprağa gömülü elektronik parçalar sayesinde bakım gerektirmez ve zorlu orman koşullarına dayanıklıdır.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon red">📊</div>
+        <h3>Bilimsel Veri Toplama</h3>
+        <p>Yangın sonrası toplanan sıcaklık verileri bilimsel analiz için kullanılabilir. Bu veriler sayesinde yangının yönü, yayılma hızı ve davranış örüntüleri tespit edilebilir; gelecek yangınlara karşı daha etkin önlemler alınabilir.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- KULLANIM KILAVUZU -->
+  <section id="kilavuz">
+    <div class="section-tag">Kullanım Kılavuzu</div>
+    <h2 class="section-title">Kurulum ve Kullanım Adımları</h2>
+    <p class="section-desc">
+      AOG sistemi, aşağıdaki adımlar izlenerek kolayca kurulup devreye alınabilir. Herhangi bir teknik uzmanlık gerektirmeyen basit kurulum süreci, sistemi saha personeli tarafından uygulanabilir kılar.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">1</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <h3>Kaplama Karışımının Hazırlanması</h3>
+          <p>Aloe vera jeli, pirinç kabuğu külü ve yumurta kabuğu külünü belirtilen oranlarda karıştırarak doğal yangın geciktirici kaplama hazırlayın. Karışım homojen ve pürüzsüz bir kıvama gelinceye kadar iyice karıştırın.</p>
+          <span class="note">🌿 Tamamen doğal ve çevre dostu malzemeler</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">2</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <h3>Ağaç Gövdesine Kaplama Uygulaması</h3>
+          <p>Hazırlanan karışımı fırça veya rulo yardımıyla ağaç gövdesinin 1–2 metre yüksekliğine kadar olan kısmına uygulayın. Kaplama katmanının düzgün ve yeterince kalın olmasına dikkat edin. Kuruduktan sonra ikinci kat uygulanabilir.</p>
+          <span class="note">📏 Yaklaşık 2 mm kalınlık hedefleyin</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">3</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <h3>Elektronik Birimin Kurulumu</h3>
+          <p>Su geçirmez kutu içindeki ESP32-S3, MAX6675 sensör ve Ra-02 LoRa modülünü ağacın dibine, yaklaşık 15–20 cm derinlikte toprağa gömün. Sensör ucunun ağaç yüzeyiyle temas halinde olduğundan emin olun.</p>
+          <span class="note">🔒 IP67 su geçirmezlik koruması</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">4</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <h3>Powerbank Bağlantısı ve Aktivasyon</h3>
+          <p>Powerbank'ı kutunun güç girişine bağlayın ve sistemi açın. LED indikatör yeşil yandığında cihaz aktif ve iletişim kurulmuş demektir. Sistem ilk birkaç dakika içinde kalibrasyon yaparak ortam sıcaklık referansını belirleyecektir.</p>
+          <span class="note">🔋 6 aya kadar kesintisiz çalışma</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-left">
+          <div class="step-num">5</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <h3>Alıcı Birimin Devreye Alınması</h3>
+          <p>Orman görevlisinin taşıyacağı alıcı birimi şarj edin ve açın. Cihaz, 1–5 km yarıçapındaki AOG sensörlerinden gelen verileri otomatik olarak alır. Tehlikeli sıcaklık eşiği aşıldığında sesli ve görsel uyarı verir.</p>
+          <span class="note">📡 1–5 km LoRa iletişim menzili</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HEDEFLER -->
+  <section id="hedefler">
+    <div class="section-tag">Hedefler</div>
+    <h2 class="section-title">Projenin Amaçları ve Vizyonu</h2>
+    <p class="section-desc">
+      AOG, hem pratik çevre koruma hedeflerine hem de bilimsel araştırma amaçlarına hizmet eden çok boyutlu bir projedir. Kısa vadeli erken uyarı işlevinin ötesinde uzun vadeli etkileri hedeflenmektedir.
+    </p>
+
+    <div class="goals-grid">
+      <div class="goal-card">
+        <span class="goal-icon">🚨</span>
+        <h3>Erken Yangın Tespiti</h3>
+        <p>Sıcaklık artışlarını yangın başlamadan önce algılayarak müdahale süresini kısaltmak ve yangın alanını minimize etmek.</p>
+        <span class="goal-tag cevre">Birincil Hedef</span>
+      </div>
+      <div class="goal-card">
+        <span class="goal-icon">🌲</span>
+        <h3>Orman Ekosistemini Koruma</h3>
+        <p>Doğal kaplama ile yangının yayılma hızını düşürerek daha geniş orman alanlarının tahrip olmadan korunmasını sağlamak.</p>
+        <span class="goal-tag cevre">Çevre</span>
+      </div>
+      <div class="goal-card">
+        <span class="goal-icon">💰</span>
+        <h3>Düşük Maliyet & Ölçeklenebilirlik</h3>
+        <p>Pahalı altyapı gerektirmeyen bu sistem, küçük bütçeli orman yönetimleri ve gelişmekte olan bölgeler için bile uygulanabilir olmayı hedefler.</p>
+        <span class="goal-tag tekno">Ekonomi</span>
+      </div>
+      <div class="goal-card">
+        <span class="goal-icon">🔬</span>
+        <h3>Yangın Davranışı Araştırması</h3>
+        <p>Toplanan sıcaklık verilerini analiz ederek yangınların nasıl başladığını, yayıldığını ve hangi faktörlerin belirleyici olduğunu bilimsel olarak anlamak.</p>
+        <span class="goal-tag bilim">Bilim</span>
+      </div>
+      <div class="goal-card">
+        <span class="goal-icon">🏆</span>
+        <h3>TÜBİTAK & TEKNOFEST</h3>
+        <p>Proje, ulusal bilim ve teknoloji yarışmalarında yenilikçi ve uygulanabilir bir çözüm olarak sergilenerek genç Türk mucitler tarafından geliştirilmiştir.</p>
+        <span class="goal-tag tekno">Yarışma</span>
+      </div>
+      <div class="goal-card">
+        <span class="goal-icon">📡</span>
+        <h3>IoT Altyapısının Yaygınlaşması</h3>
+        <p>AOG modelini temel alarak ülke genelinde dağıtık bir IoT orman izleme ağının oluşturulmasına katkı sağlamak ve çevre teknolojilerine örnek olmak.</p>
+        <span class="goal-tag bilim">Vizyon</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- İLETİŞİM -->
+  <section id="iletisim" style="background:var(--white);">
+    <div class="section-tag">İletişim</div>
+    <h2 class="section-title">Bizimle İletişime Geçin</h2>
+    <p class="section-desc">
+      AOG projesi hakkında merak ettiğiniz her şeyi sormaktan, işbirliği tekliflerinizi iletmekten ya da projeye destek olmaktan çekinmeyin.
+    </p>
+
+    <div class="contact-wrap">
+      <div class="contact-info">
+        <h3>İletişim Bilgileri</h3>
+        <p>Proje hakkında soru, öneri veya işbirliği tekliflerinizi aşağıdaki kanallardan bize ulaştırabilirsiniz.</p>
+
+        <div class="contact-item">
+          <div class="contact-item-icon">📧</div>
+          <div>
+            <div class="contact-item-label">E-posta</div>
+            <div class="contact-item-text">info@aog-proje.com</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">📍</div>
+          <div>
+            <div class="contact-item-label">Konum</div>
+            <div class="contact-item-text">Türkiye</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">🏅</div>
+          <div>
+            <div class="contact-item-label">Yarışma</div>
+            <div class="contact-item-text">TÜBİTAK · TEKNOFEST</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <div class="form-group">
+          <label>Ad Soyad</label>
+          <input type="text" placeholder="Adınız ve soyadınız">
+        </div>
+        <div class="form-group">
+          <label>E-posta</label>
+          <input type="email" placeholder="ornek@email.com">
+        </div>
+        <div class="form-group">
+          <label>Konu</label>
+          <input type="text" placeholder="Mesajınızın konusu">
+        </div>
+        <div class="form-group">
+          <label>Mesaj</label>
+          <textarea placeholder="Mesajınızı buraya yazın..."></textarea>
+        </div>
+        <button class="form-submit">Mesajı Gönder →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <strong>AOG – Akıllı Orman Gözlemcisi</strong><br>
+      Ormanlarımızı Yarınlara Taşıyoruz
+    </div>
+    <div class="footer-links">
+      <a href="#hero">Ana Sayfa</a>
+      <a href="#hakkinda">Hakkında</a>
+      <a href="#kilavuz">Kılavuz</a>
+      <a href="#hedefler">Hedefler</a>
+      <a href="#iletisim">İletişim</a>
+    </div>
+    <div style="font-size:12px;">© 2026 AOG Projesi</div>
+  </footer>
+
+</main>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Smooth scroll
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>

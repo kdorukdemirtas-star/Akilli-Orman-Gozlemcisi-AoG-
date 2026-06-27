@@ -9,11 +9,11 @@
 <meta name="apple-mobile-web-app-title" content="AOG">
 <meta name="application-name" content="AOG">
 <meta name="theme-color" content="#F2F6F9">
-<meta name="description" content="Akıllı Orman Gözlemcisi - IoT Orman Yangın Erken Uyarı Sistemi">
+<meta name="description" content="Akıllı Orman Gözlemcisi - Deneyap Kart 1A v2 IoT Yangın Erken Uyarı Sistemi">
 <meta name="msapplication-TileColor" content="#12b84e">
 <meta name="msapplication-tap-highlight" content="no">
 <link rel="manifest" id="pwa-manifest">
-<title>AOG – Akıllı Orman Gözlemcisi</title>
+<title>AOG – Deneyap Kontrol Paneli</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -35,21 +35,16 @@
 }
 html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;}
 
-/* APP CONTROLLER CONTAINER */
 .phone{width:100%;height:100vh;height:100dvh;background:var(--bg);position:relative;overflow:hidden;}
-
-/* LAYOUT PANEL */
 .screen{position:absolute;top:0;left:0;right:0;bottom:64px;bottom:calc(64px + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
 .screen::-webkit-scrollbar{display:none;}
 .page{display:none;}
 .page.active{display:block;}
 .cnt{padding:0 13px 6px;}
 
-/* STATUS BAR */
+/* STATUS BAR & HEADER */
 .sb{height:44px;padding:12px 22px 0;padding-top:calc(12px + env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;background:var(--bg);position:sticky;top:0;z-index:50;}
 .sb-t{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--t1);}
-
-/* HEADER */
 .hdr{padding:7px 16px 10px;display:flex;align-items:center;gap:10px;background:var(--bg);border-bottom:1px solid var(--bd);}
 .logo-area{display:flex;align-items:center;gap:8px;}
 .logo-title{font-family:'Inter',sans-serif;font-size:16px;font-weight:600;color:var(--t1);letter-spacing:-0.3px;}
@@ -59,36 +54,21 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
 @keyframes p{0%,100%{box-shadow:0 0 0 0 rgba(18,184,78,.35);}50%{box-shadow:0 0 0 4px rgba(18,184,78,0);}}
 .badge-t{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;color:var(--g);}
 
-/* CARDS */
+/* CARDS & LABELS */
 .ca{background:#ffffff;border:1px solid var(--bd);border-radius:13px;padding:13px 14px;margin-bottom:9px;}
-.cm{background:#E7F5E9;border:1px solid #c4e4c8;border-radius:13px;padding:13px 14px;margin-bottom:9px;}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:var(--t3);letter-spacing:.8px;margin:12px 0 8px;display:flex;align-items:center;gap:6px;}
+.lbl::after{content:'';flex:1;height:1px;background:var(--bd);opacity:0.5;}
 
-/* LABEL */
-.lbl{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--t3);letter-spacing:.8px;margin-bottom:9px;}
-.cm .lbl{color:#4a6a52;}
-
-/* MAP SECTION */
-.mcard{margin:9px 0;border-radius:13px;overflow:hidden;border:1px solid var(--bd);position:relative;height:240px;}
-#leafletMap{width:100%;height:100%;}
-.mlbl{position:absolute;top:8px;left:9px;z-index:400;font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--g);letter-spacing:.7px;background:rgba(255,255,255,.92);padding:3px 7px;border-radius:4px;border:1px solid rgba(18,184,78,.18);}
-.mdist{position:absolute;bottom:9px;left:9px;z-index:400;background:rgba(255,255,255,.92);border:1px solid var(--bd);padding:5px 9px;border-radius:7px;display:flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:11px;color:var(--t1);}
-.mdist b{font-weight:600;color:var(--g);}
-
-/* GPS LAYOUT */
-.gps-row{display:flex;gap:7px;margin-bottom:9px;}
-.gc{flex:1;background:#ffffff;border:1px solid var(--bd);border-radius:10px;padding:8px 10px;}
-.gc-l{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--t3);letter-spacing:.5px;margin-bottom:3px;}
-.gc-v{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t1);}
-
-/* SENSOR DASHBOARD COMPONENT */
+/* SENSOR DASHBOARD */
 .sc{background:#E7F5E9;border:1px solid #c4e4c8;border-radius:13px;padding:13px 14px;margin-bottom:9px;position:relative;overflow:hidden;}
 .sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--g),transparent);}
+.sc.danger{background:#fdf2f2;border-color:#f5c6c6;}
 .sc.danger::before{background:linear-gradient(90deg,var(--r),transparent);}
 .sc-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;}
-.sc-tag{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--g);letter-spacing:.7px;}
+.sc-tag{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:600;color:var(--g);letter-spacing:.7px;}
 .sc.danger .sc-tag{color:var(--r);}
-.sc-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:#2a6040;margin-top:2px;}
-.sig{display:flex;align-items:center;gap:5px;background:rgba(18,184,78,.1);border:1px solid rgba(18,184,78,.22);padding:4px 8px;border-radius:7px;}
+.sc-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t2);margin-top:2px;}
+.sig{display:flex;align-items:center;gap:5px;background:rgba(18,184,78,0.08);border:1px solid rgba(18,184,78,0.15);padding:4px 8px;border-radius:7px;}
 .sig-b{display:flex;gap:2px;align-items:flex-end;}
 .sig-b span{display:block;width:3px;background:var(--g);border-radius:1px;}
 .sig-b span:nth-child(1){height:5px;}.sig-b span:nth-child(2){height:8px;}.sig-b span:nth-child(3){height:10px;}.sig-b span:nth-child(4){height:13px;}
@@ -99,79 +79,83 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
 .tv-u{font-family:'Inter',sans-serif;font-size:19px;font-weight:300;color:#7a9070;margin-bottom:7px;}
 .tv-note{margin-left:auto;margin-bottom:7px;text-align:right;}
 .tv-nl{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:#7a9070;}
-.tv-nv{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#12b84e;}
+.tv-nv{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:#12b84e;}
+.sc.danger .tv-nv{color:var(--r);}
 
 .mr{display:flex;gap:7px;}
-.mc2{flex:1;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);border-radius:8px;padding:7px 9px;}
-.mc2-l{font-family:'JetBrains Mono',monospace;font-size:7px;color:#5a7860;letter-spacing:.5px;}
+.mc2{flex:1;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.9);border-radius:8px;padding:7px 9px;}
+.mc2-l{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:#5a7860;letter-spacing:.5px;}
 .mc2-v{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:#2a3c26;margin-top:2px;}
 
-/* ALARM NOTIFICATION BANNER */
+/* NOTIFICATION & CHIPS */
 .wb{border-radius:9px;padding:10px 12px;margin-bottom:9px;display:none;align-items:center;gap:9px;animation:shake 0.5s infinite alternate;}
 @keyframes shake { 0% { transform: translateX(0); } 100% { transform: translateX(2px); } }
 .wb.show{display:flex;}
 .wb.crit{background:rgba(196,48,48,.1);border:1px solid rgba(196,48,48,.3);color:var(--r);}
 .wb-t{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;}
-
-/* ALARM CHIPS */
 .ar{display:flex;gap:7px;margin-bottom:9px;}
 .ac{flex:1;border-radius:9px;padding:9px 11px;display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;}
 .ac.ok{background:rgba(18,184,78,.07);border:1px solid rgba(18,184,78,.18);color:#0e7a38;}
-.ac.cr{background:rgba(196,48,48,.07);border:1px solid rgba(196,48,48,.2);color:#7a1a1a;}
+.ac.cr {background:rgba(196,48,48,.07);border:1px solid rgba(196,48,48,.2);color:#7a1a1a;}
 .ac-dot{width:6px;height:6px;border-radius:50%;background:var(--g);margin-left:auto;}
 .ac.cr .ac-dot{background:var(--r);animation:p 1s infinite;}
 
-/* 1 TX 1 RX NODE STYLE */
-.nr{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.05);gap:9px;}
+/* 1 TX 1 RX NETWORK STRUCTURE */
+.nr{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.05);gap:11px;}
 .nr:last-child{border-bottom:none;padding-bottom:0;}
-.nd{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.nd{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .nd.ok{background:var(--g);}
 .nd.mrx{background:var(--b);}
-.ni2{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);width:75px;flex-shrink:0;}
-.nt{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);width:110px;}
-.nb-w{flex:1;height:4px;background:rgba(0,0,0,.06);border-radius:2px;overflow:hidden;}
-.nb{height:100%;border-radius:2px;}
-.nb.ok{background:var(--g);}
-.nb.mrx{background:var(--b);}
-.ns{font-family:'JetBrains Mono',monospace;font-size:8.5px;text-align:right;}
+.ni2{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;color:var(--t2);width:90px;flex-shrink:0;}
+.nt{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);flex:1;}
+.ns{font-family:'JetBrains Mono',monospace;font-size:9px;text-align:right;font-weight:500;}
 .ns.ok{color:var(--g);}
 .ns.mrx{color:var(--b);}
 
-/* STAT GRID */
+.dr{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.04);}
+.dr:last-child{border-bottom:none;}
+.dl{font-family:'Inter',sans-serif;font-size:12.5px;color:var(--t2);}
+.dv{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:500;color:var(--t1);}
+
+/* STAT GRID & MAP */
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;}
 .sbox{background:#ffffff;border:1px solid var(--bd);border-radius:12px;padding:12px;}
 .sl{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t3);letter-spacing:.6px;margin-bottom:4px;}
 .sv{font-family:'Inter',sans-serif;font-size:24px;font-weight:400;color:var(--t1);line-height:1;}
 .su{font-family:'Inter',sans-serif;font-size:11px;color:var(--t3);margin-left:2px;}
 .ssub{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t4);margin-top:4px;}
+.mcard{margin:9px 0;border-radius:13px;overflow:hidden;border:1px solid var(--bd);position:relative;height:240px;}
+#leafletMap{width:100%;height:100%;}
+.mlbl{position:absolute;top:8px;left:9px;z-index:400;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;color:var(--g);background:rgba(255,255,255,.95);padding:3px 7px;border-radius:4px;border:1px solid var(--bd);}
 
-/* LOG LIST STYLE */
-.alr{padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);display:flex;gap:9px;align-items:flex-start;}
+/* LOGS */
+.alr{padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);display:flex;gap:9px;}
 .alr:last-child{border-bottom:none;}
-.alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);width:45px;margin-top:2px;}
+.alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);margin-top:2px;}
 .alr-msg{font-family:'Inter',sans-serif;font-size:12.5px;color:var(--t1);flex:1;}
-.ab{display:inline-block;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:7.5px;font-weight:500;margin-top:3px;}
+.ab{display:inline-block;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:7.5px;font-weight:500;margin-top:4px;}
 .ab.g{background:rgba(18,184,78,.08);color:var(--g);}
 .ab.w{background:rgba(196,48,48,.08);color:var(--r);}
 
-/* DOWNLOAD & DOCUMENTATION SECTION (SON SAYFA) */
-.doc-card{background:#ffffff;border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;transition:all 0.2s;}
-.doc-card:active{transform:scale(0.98);background:#f9fbf9;}
-.doc-icon{width:40px;height:40px;background:#fff0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--r);flex-shrink:0;}
+/* DOCUMENTATION & MEDIA DOWNLOADS GRID (SON SAYFA) */
+.doc-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.doc-card{background:#ffffff;border:1px solid var(--bd);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;transition:all 0.2s;text-decoration:none;}
+.doc-card:active{transform:scale(0.98);background:#f6f8f5;}
+.doc-icon{width:36px;height:36px;background:#fff0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--r);flex-shrink:0;}
 .doc-icon.img-type{background:#e8f4fd;color:var(--b);}
+.doc-icon.zip-type{background:#fff7e6;color:var(--o);}
 .doc-info{flex:1;}
-.doc-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);}
-.doc-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);margin-top:2px;}
-.doc-btn{background:var(--c1);color:#1a5a30;border:1px solid #c4e4c8;border-radius:6px;padding:6px 10px;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;text-decoration:none;display:inline-block;}
+.doc-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);line-height:1.2;}
+.doc-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);margin-top:3px;}
+.doc-btn{background:var(--c1);color:#1a5a30;border:1px solid #c4e4c8;border-radius:6px;padding:5px 10px;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;white-space:nowrap;}
 
-/* PAGE HEADER */
 .ph{padding:13px 0 7px;}
 .ph-t{font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:var(--t1);}
 .ph-s{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--t4);margin-top:3px;}
 
-/* BOTTOM NAV BAR */
+/* NAVIGATION */
 .bnav{position:absolute;bottom:0;left:0;right:0;height:64px;height:calc(64px + env(safe-area-inset-bottom));background:#ffffff;border-top:1px solid var(--bd);display:flex;align-items:flex-start;padding:5px 5px 0;padding-bottom:env(safe-area-inset-bottom);z-index:100;}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;border-radius:9px;transition:.12s;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;border-radius:9px;}
 .ni svg{width:18px;height:18px;fill:none;stroke:var(--t4);stroke-width:1.5;}
 .ni span{font-family:'Inter',sans-serif;font-size:9px;font-weight:500;color:var(--t4);}
 .ni.active svg{stroke:var(--g);stroke-width:2;}
@@ -183,19 +167,19 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
 <div class="screen">
 
   <div class="sb">
-    <span class="sb-t" id="clk">22:28</span>
+    <span class="sb-t" id="clk">12:35</span>
     <div style="display:flex;align-items:center;gap:5px;background:#e0f5e8;border:1px solid #b0dfc0;padding:3px 9px;border-radius:14px;">
       <div class="dot"></div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--g);">CANLI</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--g);">CANLI AKIŞ</span>
     </div>
   </div>
 
   <div class="hdr">
     <div class="logo-area">
-      <div style="width:24px;height:24px;background:var(--g);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:12px;">A</div>
+      <div style="width:24px;height:24px;background:var(--g);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:12px;">D</div>
       <div>
-        <div class="logo-title">AOG Kontrol</div>
-        <div class="hdr-sub">AKILLI ORMAN GÖZLEMCİSİ</div>
+        <div class="logo-title">AOG Deneyap Panel</div>
+        <div class="hdr-sub">DENEYAP KART 1A V2 TELEMETRİ</div>
       </div>
     </div>
     <div class="badge">
@@ -207,53 +191,49 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
     <div class="cnt">
       <div class="ph">
         <h1 class="ph-t">Sistem Durumu</h1>
-        <p class="ph-s">ANLIK RSP PICO 2W VERİ AKIŞI</p>
+        <p class="ph-s">ANLIK DENEYAP KART 1A V2 TELEMETRİ VERİLERİ</p>
       </div>
 
       <div id="alert-banner" class="wb crit">
-        <span class="wb-t">⚠️ KRİTİK YANGIN RİSKİ: YÜKSEK SICAKLIK / GAZ TESPİT EDİLDİ!</span>
+        <span class="wb-t">🚨 KRİTİK TERMOKUPL ALARMI: YÜKSEK SICAKLIK / YANGIN TESPİT EDİLDİ!</span>
       </div>
 
       <div id="sensor-card" class="sc">
         <div class="sc-h">
           <div>
-            <div class="sc-tag" id="risk-lbl">GÜVENLİ</div>
-            <div class="sc-id">TX-01 (Uzak Düğüm)</div>
+            <div class="sc-tag" id="risk-lbl">NORMAL</div>
+            <div class="sc-id">TX-01 (Deneyap Verici Düğüm)</div>
           </div>
           <div class="sig">
             <div class="sig-b">
               <span></span><span></span><span></span><span></span>
             </div>
-            <span class="sig-t" id="rssi-val">-68 dBm</span>
+            <span class="sig-t" id="rssi-val">-72 dBm</span>
           </div>
         </div>
         <div class="tv">
-          <span class="tv-n" id="main-temp">24.8</span>
+          <span class="tv-n" id="main-temp">26.4</span>
           <span class="tv-u">°C</span>
           <div class="tv-note">
-            <div class="tv-nl">HAVA KALİTESİ</div>
-            <div class="tv-nv" id="gas-lbl">TEMİZ</div>
+            <div class="tv-nl">MAX6675 DURUM</div>
+            <div class="tv-nv" id="gas-lbl">BAĞLI / HAZIR</div>
           </div>
         </div>
         <div class="mr">
           <div class="mc2">
-            <div class="mc2-l">NEM ORAMI</div>
-            <div class="mc2-v" id="main-hum">%42.5</div>
+            <div class="mc2-l">SENSÖR TİPİ</div>
+            <div class="mc2-v">K-Tipi Termokupl</div>
           </div>
           <div class="mc2">
             <div class="mc2-l">PİL GERİLİMİ</div>
-            <div class="mc2-v" id="main-bat">3.94 V</div>
+            <div class="mc2-v" id="main-bat">3.85 V</div>
           </div>
         </div>
       </div>
 
       <div class="ar">
-        <div id="chip-smoke" class="ac ok">
-          <span>Gaz / Duman</span>
-          <div class="ac-dot"></div>
-        </div>
         <div id="chip-temp" class="ac ok">
-          <span>Isı Eşiği</span>
+          <span>MAX6675 Okuma Eşiği</span>
           <div class="ac-dot"></div>
         </div>
       </div>
@@ -261,29 +241,28 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
       <div class="sg">
         <div class="sbox">
           <div class="sl">GÜNEŞ PANELİ</div>
-          <div class="sv" id="stat-solar">1.2<span class="su">W</span></div>
-          <div class="ssub">Şarj Akımı: 240 mA</div>
+          <div class="sv" id="stat-solar">1.4<span class="su">W</span></div>
+          <div class="ssub">Şarj Akımı: 280 mA</div>
         </div>
         <div class="sbox">
-          <div class="sl">ALINAN PAKET</div>
-          <div class="sv" id="stat-packets">1,402</div>
-          <div class="ssub">Kayıp Paket: %0.0</div>
+          <div class="sl">ALINAN PAKET (RX)</div>
+          <div class="sv" id="stat-packets">2,184</div>
+          <div class="ssub">Kayıp Oranı: %0.0</div>
         </div>
       </div>
 
       <div class="ca">
-        <div class="lbl">SİSTEM OLAY LOGLARI (BUGÜN)</div>
+        <div class="lbl">DONANIM OLAY GÜNLÜĞÜ</div>
         <div id="log-container">
           <div class="alr">
-            <span class="alr-time">22:15:04</span>
+            <span class="alr-time">10:32:11</span>
             <div class="alr-msg">
-              TX-01 Düğümünden LoRa veri paketi başarıyla alındı.
+              Deneyap Kart 1A v2 (TX) verileri LoRa üzerinden başarıyla çözümlendi.
               <br><span class="ab g">BAŞARILI</span>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -291,24 +270,11 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
     <div class="cnt">
       <div class="ph">
         <h1 class="ph-t">Coğrafi Konum Takibi</h1>
-        <p class="ph-s">TX VE RX NOKTALARININ GERÇEK ZAMANLI MESAFESİ</p>
+        <p class="ph-s">DENEYAP ÜNİTELERİ ARASI AKTİF RF MESAFESİ</p>
       </div>
-
       <div class="mcard">
-        <div class="mlbl">GPS AKTİF (3D FIX)</div>
+        <div class="mlbl">GPS BAĞLANTISI AKTİF</div>
         <div id="leafletMap"></div>
-        <div class="mdist">İki Ünite Arası Mesafe: <b id="map-distance">345 m</b></div>
-      </div>
-
-      <div class="gps-row">
-        <div class="gc">
-          <div class="gc-l">TX VERİCİ LAT/LNG</div>
-          <div class="gc-v" id="gps-tx">39.7645, 30.5234</div>
-        </div>
-        <div class="gc">
-          <div class="gc-l">RX ALICI LAT/LNG</div>
-          <div class="gc-v" id="gps-rx">39.7621, 30.5211</div>
-        </div>
       </div>
     </div>
   </div>
@@ -316,41 +282,34 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
   <div id="p-nodes" class="page">
     <div class="cnt">
       <div class="ph">
-        <h1 class="ph-t">Ağ Topolojisi (1 TX / 1 RX)</h1>
-        <p class="ph-s">SİSTEMDE TANIMLI AKTİF DONANIMLAR</p>
+        <h1 class="ph-t">Ağ Topolojisi</h1>
+        <p class="ph-s">SİSTEMDE TANIMLI 1 TX VE 1 RX DONANIM YAPISI</p>
       </div>
 
       <div class="ca">
-        <div class="lbl">BAĞLANTI LİSTESİ VE SİNYAL GÜCÜ</div>
+        <div class="lbl">AKTİF DONANIM DÜĞÜMLERİ</div>
         
         <div class="nr">
           <div class="nd ok"></div>
-          <div class="ni2">NODE-01 (TX)</div>
-          <div class="nt">Verici (Pico 2W)</div>
-          <div class="nb-w">
-            <div class="nb ok" style="width: 85%"></div>
-          </div>
-          <div class="ns ok">Çevrimiçi</div>
+          <div class="ni2">DÜĞÜM-01 (TX)</div>
+          <div class="nt">Deneyap Kart 1A v2 (Verici)</div>
+          <div class="ns ok">Çevrimiçi (LoRa)</div>
         </div>
 
         <div class="nr">
           <div class="nd mrx"></div>
-          <div class="ni2">GATEWAY (RX)</div>
-          <div class="nt">Merkez Alıcı İstasyon</div>
-          <div class="nb-w">
-            <div class="nb mrx" style="width: 100%"></div>
-          </div>
-          <div class="ns mrx" style="color: var(--b);">MERKEZ</div>
+          <div class="ni2">MERKEZ (RX)</div>
+          <div class="nt">Deneyap Kart 1A v2 (Alıcı İstasyon)</div>
+          <div class="ns mrx" style="color: var(--b);">ALICI MODDA</div>
         </div>
-
       </div>
 
       <div class="ca">
-        <div class="lbl">DONANIM SPESİFİKASYONLARI</div>
-        <div class="dr"><span class="dl">Verici İşlemci</span><span class="dv">RP2350 (RSP Pico 2W)</span></div>
-        <div class="dr"><span class="dl">Çevre Birim Sensör</span><span class="dv">BME280 (I2C Adres 0x76)</span></div>
-        <div class="dr"><span class="dl">Radyo Frekans Modülü</span><span class="dv">LoRa E32 433T20D</span></div>
-        <div class="dr"><span class="dl">Haberleşme Protokolü</span><span class="dv">Seri UART (9600 bps)</span></div>
+        <div class="lbl">DONANIM SPESİFİKASYON DETAYLARI</div>
+        <div class="dr"><span class="dl">Mikrodenetleyici (TX/RX)</span><span class="dv">Deneyap Kart 1A v2</span></div>
+        <div class="dr"><span class="dl">Sıcaklık Sensörü</span><span class="dv">MAX6675 Termokupl (SPI)</span></div>
+        <div class="dr"><span class="dl">RF Alıcı-Verici Modül</span><span class="dv">LoRa E32 433T20D</span></div>
+        <div class="dr"><span class="dl">Haberleşme Arayüzü</span><span class="dv">Seri UART / SPI</span></div>
       </div>
     </div>
   </div>
@@ -358,55 +317,72 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
   <div id="p-docs" class="page">
     <div class="cnt">
       <div class="ph">
-        <h1 class="ph-t">Dosyalar ve Belgeler</h1>
-        <p class="ph-s">PROJE DÖKÜMANTASYONU VE MEDYA VARLIKLARI</p>
+        <h1 class="ph-t">Dosyalar ve Görsel Kitaplığı</h1>
+        <p class="ph-s">PROJE DÖKÜMANTASYONLARI VE TÜM GÖRSEL VARLIKLAR</p>
       </div>
 
-      <div class="lbl">PROJE PDF BELGESİ</div>
-      <div class="doc-card">
-        <div class="doc-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        </div>
-        <div class="doc-info">
-          <div class="doc-title">Akıllı Orman Gözlemcisi Teknik Sunum PDF</div>
-          <div class="doc-meta">Google Drive Ortak Erişim Linki</div>
-        </div>
-        <a href="https://drive.google.com/file/d/1ihu9W0pE469tRN8RbS7c0BZNiouRVI1-/view?usp=sharing" target="_blank" class="doc-btn">Görüntüle</a>
+      <div class="lbl">PROJE TEKNİK BELGELERİ</div>
+      <div class="doc-grid">
+        <a href="https://drive.google.com/file/d/1ihu9W0pE469tRN8RbS7c0BZNiouRVI1-/view?usp=sharing" target="_blank" class="doc-card">
+          <div class="doc-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          </div>
+          <div class="doc-info">
+            <div class="doc-title">Akıllı Orman Gözlemcisi Teknik Sunumu</div>
+            <div class="doc-meta">PDF Formatı • Google Drive Ortak Erişim Linki</div>
+          </div>
+          <div class="doc-btn">Görüntüle</div>
+        </a>
       </div>
 
-      <div class="lbl">İNDİRİLEBİLİR GÖRSEL VARLIKLAR</div>
+      <div class="lbl">DEVRE VE DONANIM ŞEMALARI</div>
+      <div class="doc-grid">
+        <a href="https://drive.google.com/file/d/DeneyapMax6675SemasiLink/view" target="_blank" class="doc-card">
+          <div class="doc-icon img-type">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          </div>
+          <div class="doc-info">
+            <div class="doc-title">Deneyap Kart 1A v2 & MAX6675 Devre Çizimi</div>
+            <div class="doc-meta">Görsel / Şematik Çizim • PNG</div>
+          </div>
+          <div class="doc-btn">İndir</div>
+        </a>
 
-      <div class="doc-card">
-        <div class="doc-icon img-type">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        </div>
-        <div class="doc-info">
-          <div class="doc-title">Cyber Studios Ana Logo</div>
-          <div class="doc-meta">PNG Format - Yüksek Çözünürlük</div>
-        </div>
-        <a href="https://drive.google.com/file/d/CyberStudiosLogoLink/view" target="_blank" class="doc-btn">İndir</a>
+        <a href="https://drive.google.com/file/d/DeneyapLoraBaglantiLink/view" target="_blank" class="doc-card">
+          <div class="doc-icon img-type">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          </div>
+          <div class="doc-info">
+            <div class="doc-title">LoRa E32 & Deneyap UART Bağlantı Görseli</div>
+            <div class="doc-meta">Fritzing Bağlantı Şeması • JPG</div>
+          </div>
+          <div class="doc-btn">İndir</div>
+        </a>
       </div>
 
-      <div class="doc-card">
-        <div class="doc-icon img-type">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        </div>
-        <div class="doc-info">
-          <div class="doc-title">Nexo Sanal Otomotiv Logosu</div>
-          <div class="doc-meta">BABFT Tasarım Brand Asset</div>
-        </div>
-        <a href="https://drive.google.com/file/d/NexoBrandLogoLink/view" target="_blank" class="doc-btn">İndir</a>
-      </div>
+      <div class="lbl">GRAFİK VE MARKA VARLIKLARI</div>
+      <div class="doc-grid">
+        <a href="https://drive.google.com/file/d/CyberStudiosVarliklarLink/view" target="_blank" class="doc-card">
+          <div class="doc-icon img-type">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2 12 12"></polygon><path d="M2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+          </div>
+          <div class="doc-info">
+            <div class="doc-title">Cyber Studios Kurumsal Logo & Intro Kiti</div>
+            <div class="doc-meta">Yüksek Çözünürlüklü Şeffaf Logo Varlıkları</div>
+          </div>
+          <div class="doc-btn">İndir</div>
+        </a>
 
-      <div class="doc-card">
-        <div class="doc-icon img-type">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-        </div>
-        <div class="doc-info">
-          <div class="doc-title">RSP Pico 2W & BME280 Bağlantı Şeması</div>
-          <div class="doc-meta">Fritzing Donanım Devre Çizimi</div>
-        </div>
-        <a href="https://drive.google.com/file/d/CircuitDiagramLink/view" target="_blank" class="doc-btn">İndir</a>
+        <a href="https://drive.google.com/file/d/NexoBrandLogoLink/view" target="_blank" class="doc-card">
+          <div class="doc-icon img-type">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+          </div>
+          <div class="doc-info">
+            <div class="doc-title">Nexo Otomotiv Amblemi (Roblox BABFT)</div>
+            <div class="doc-meta">Oyun İçi Vektörel Tasarım Logosu • PNG</div>
+          </div>
+          <div class="doc-btn">İndir</div>
+        </a>
       </div>
 
     </div>
@@ -436,7 +412,7 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin
 </div>
 
 <script>
-// SEKMELER ARASI GEÇİŞ MOTORU
+// NAVİGASYON MOTORU
 document.querySelectorAll('.ni').forEach(button => {
   button.addEventListener('click', () => {
     document.querySelectorAll('.ni').forEach(b => b.classList.remove('active'));
@@ -452,56 +428,50 @@ document.querySelectorAll('.ni').forEach(button => {
   });
 });
 
-// SAAT GÜNCELLEME
+// SAAT GÜNCELLEME MOTORU
 setInterval(() => {
   const d = new Date();
   document.getElementById('clk').innerText = d.toTimeString().substring(0,5);
 }, 1000);
 
-// LEAFLET MAP KURULUMU (Eskişehir Orman Bölgesi Odaklı Örnek Coğrafya)
-const myMap = L.map('leafletMap', {zoomControl: false}).setView([39.7635, 30.5222], 16);
+// LEAFLET MAP (Eskişehir Bölge Odaklı Harita Yapısı)
+const myMap = L.map('leafletMap', {zoomControl: false}).setView([39.7635, 30.5222], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(myMap);
 
-// 1 TX ve 1 RX İşaretçileri
 const txIcon = L.divIcon({html: '<div style="width:12px;height:12px;background:#12b84e;border:2px solid white;border-radius:50%;box-shadow:0 0 6px rgba(0,0,0,0.3);"></div>', className:''});
 const rxIcon = L.divIcon({html: '<div style="width:14px;height:14px;background:#2468b0;border:2px solid white;border-radius:50%;box-shadow:0 0 6px rgba(0,0,0,0.3);"></div>', className:''});
 
-const markerTX = L.marker([39.7645, 30.5234], {icon: txIcon}).addTo(myMap).bindPopup('TX-01: RSP Pico Verici');
-const markerRX = L.marker([39.7621, 30.5211], {icon: rxIcon}).addTo(myMap).bindPopup('GATEWAY: Merkez Alıcı');
+L.marker([39.7645, 30.5234], {icon: txIcon}).addTo(myMap).bindPopup('TX-01: Deneyap Verici Düğüm');
+L.marker([39.7621, 30.5211], {icon: rxIcon}).addTo(myMap).bindPopup('GATEWAY: Merkez Alıcı Ünite');
 
-// 1 TX 1 RX IoT VERİ SİMÜLASYONU VE YANGIN ERKEN UYARI MANTIĞI
-let totalPackets = 1402;
+// 1 TX / 1 RX MAX6675 IOT TELEMETRİ SİMÜLASYONU
+let totalPackets = 2184;
 function simulateIoTData() {
-  // Rastgele küçük dalgalanmalar oluştur
-  let temp = (23 + Math.random() * 4).toFixed(1);
-  let hum = (40 + Math.random() * 10).toFixed(1);
-  let bat = (3.9 + Math.random() * 0.08).toFixed(2);
-  let solar = (1.0 + Math.random() * 0.4).toFixed(1);
+  // MAX6675 Termokupl genellikle geniş sıcaklık spektrumlarını okur
+  let temp = (24 + Math.random() * 5).toFixed(1);
+  let bat = (3.8 + Math.random() * 0.1).toFixed(2);
+  let solar = (1.1 + Math.random() * 0.4).toFixed(1);
   
-  // Kritik alarm durum testi tetikleyicisi (%15 olasılıkla yangın tehlike simülasyonu)
-  let testRisk = Math.random() > 0.85;
-  if (testRisk) {
-    temp = (54.3 + Math.random() * 5).toFixed(1); // Kritik sıcaklık
+  // %10 olasılıkla yangın veya yüksek ısı alarm durum tetiklemesi
+  let testDanger = Math.random() > 0.90;
+  if (testDanger) {
+    temp = (184.5 + Math.random() * 25).toFixed(1); // Termokupl yüksek derece simülasyonu
     document.getElementById('sensor-card').classList.add('danger');
-    document.getElementById('risk-lbl').innerText = '🔥 KRİTİK TEHLİKE';
-    document.getElementById('gas-lbl').innerText = 'DUMAN / GAZ VAR';
+    document.getElementById('risk-lbl').innerText = '🔥 ALARM: YÜKSEK ISI';
+    document.getElementById('gas-lbl').innerText = 'LİMİT AŞILDI';
     document.getElementById('alert-banner').classList.add('show');
-    document.getElementById('chip-smoke').className = 'ac cr';
     document.getElementById('chip-temp').className = 'ac cr';
     
-    pushOlayLog("UYARI: TX-01 istasyonunda ani sıcaklık artışı ve duman algılandı!", "w");
+    pushOlayLog("MAX6675 Kritik Sınır Aşımı! Sıcaklık: " + temp + "°C", "w");
   } else {
     document.getElementById('sensor-card').classList.remove('danger');
-    document.getElementById('risk-lbl').innerText = 'GÜVENLİ';
-    document.getElementById('gas-lbl').innerText = 'TEMİZ';
+    document.getElementById('risk-lbl').innerText = 'NORMAL';
+    document.getElementById('gas-lbl').innerText = 'BAĞLI / HAZIR';
     document.getElementById('alert-banner').classList.remove('show');
-    document.getElementById('chip-smoke').className = 'ac ok';
     document.getElementById('chip-temp').className = 'ac ok';
   }
 
-  // Değerleri HTML elemanlarına bas
   document.getElementById('main-temp').innerText = temp;
-  document.getElementById('main-hum').innerText = "%" + hum;
   document.getElementById('main-bat').innerText = bat + " V";
   document.getElementById('stat-solar').innerHTML = solar + '<span class="su">W</span>';
   
@@ -513,7 +483,7 @@ function pushOlayLog(mesaj, tip) {
   const container = document.getElementById('log-container');
   const timeStr = new Date().toTimeString().substring(0,8);
   const badgeClass = tip === "w" ? "ab w" : "ab g";
-  const badgeText = tip === "w" ? "TEHLİKE" : "BAŞARILI";
+  const badgeText = tip === "w" ? "KRİTİK" : "OK";
   
   const logRow = document.createElement('div');
   logRow.className = 'alr';
@@ -522,11 +492,10 @@ function pushOlayLog(mesaj, tip) {
     <div class="alr-msg">${mesaj}<br><span class="${badgeClass}">${badgeText}</span></div>
   `;
   container.prepend(logRow);
-  if(container.children.length > 4) container.removeChild(container.lastChild);
+  if(container.children.length > 3) container.removeChild(container.lastChild);
 }
 
-// Canlı döngüyü başlat
-setInterval(simulateIoTData, 3500);
+setInterval(simulateIoTData, 4000);
 </script>
 </body>
 </html>

@@ -10,17 +10,19 @@
 <meta name="application-name" content="AOG">
 <meta name="theme-color" content="#F2F6F9">
 <meta name="description" content="Akıllı Orman Gözlemcisi - IoT Orman Yangın Erken Uyarı Sistemi">
-<title>AOG – Akıllı Orman Gözlemcisi Kontrol Paneli</title>
+<meta name="msapplication-TileColor" content="#12b84e">
+<meta name="msapplication-tap-highlight" content="no">
+<link rel="manifest" id="pwa-manifest">
+<title>AOG – Akıllı Orman Gözlemcisi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<link rel="manifest" id="pwa-manifest">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
   --g:  #12b84e;
   --r:  #c43030;
-  --o:  #d4a020;
+  --o:  #ff9800;
   --b:  #2468b0;
   --bg: #F2F6F9;
   --c1: #E7F5E9;
@@ -31,8 +33,12 @@
   --t3: #8a9882;
   --t4: #b8c4b0;
 }
-html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--t1);}
+html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;margin:0;padding:0;}
+
+/* APP CONTROLLER CONTAINER */
 .phone{width:100%;height:100vh;height:100dvh;background:var(--bg);position:relative;overflow:hidden;}
+
+/* LAYOUT PANEL */
 .screen{position:absolute;top:0;left:0;right:0;bottom:64px;bottom:calc(64px + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
 .screen::-webkit-scrollbar{display:none;}
 .page{display:none;}
@@ -44,90 +50,132 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:
 .sb-t{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--t1);}
 
 /* HEADER */
-.hdr{padding:10px 16px;display:flex;align-items:center;gap:10px;background:var(--bg);border-bottom:1px solid var(--bd);}
-.hdr-title{font-family:'Inter',sans-serif;font-weight:600;font-size:16px;color:var(--t1);}
-.hdr-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:.4px;}
+.hdr{padding:7px 16px 10px;display:flex;align-items:center;gap:10px;background:var(--bg);border-bottom:1px solid var(--bd);}
+.logo-area{display:flex;align-items:center;gap:8px;}
+.logo-title{font-family:'Inter',sans-serif;font-size:16px;font-weight:600;color:var(--t1);letter-spacing:-0.3px;}
+.hdr-sub{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);letter-spacing:.4px;}
 .badge{margin-left:auto;display:flex;align-items:center;gap:5px;background:#dff0e6;border:1px solid #b0d8be;padding:4px 10px;border-radius:16px;}
-.dot{width:6px;height:6px;background:var(--g);border-radius:50%;animation:p 1.8s ease-in-out infinite;}
-@keyframes p{0%,100%{box-shadow:0 0 0 0 rgba(18,184,78,.45);}50%{box-shadow:0 0 0 5px rgba(18,184,78,0);}}
-.badge-t{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;color:var(--g);}
+.dot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:p 1.8s ease-in-out infinite;}
+@keyframes p{0%,100%{box-shadow:0 0 0 0 rgba(18,184,78,.35);}50%{box-shadow:0 0 0 4px rgba(18,184,78,0);}}
+.badge-t{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;color:var(--g);}
 
 /* CARDS */
-.ca{background:#ffffff;border:1px solid var(--bd);border-radius:13px;padding:13px 14px;margin-bottom:9px;box-shadow:0 1px 3px rgba(0,0,0,.02);}
+.ca{background:#ffffff;border:1px solid var(--bd);border-radius:13px;padding:13px 14px;margin-bottom:9px;}
 .cm{background:#E7F5E9;border:1px solid #c4e4c8;border-radius:13px;padding:13px 14px;margin-bottom:9px;}
-.lbl{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:var(--t3);letter-spacing:.8px;margin-bottom:9px;text-transform:uppercase;}
 
-/* MAP */
-.mcard{margin:9px 0;border-radius:13px;overflow:hidden;border:1px solid var(--bd);position:relative;height:180px;}
+/* LABEL */
+.lbl{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--t3);letter-spacing:.8px;margin-bottom:9px;}
+.cm .lbl{color:#4a6a52;}
+
+/* MAP SECTION */
+.mcard{margin:9px 0;border-radius:13px;overflow:hidden;border:1px solid var(--bd);position:relative;height:240px;}
 #leafletMap{width:100%;height:100%;}
+.mlbl{position:absolute;top:8px;left:9px;z-index:400;font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--g);letter-spacing:.7px;background:rgba(255,255,255,.92);padding:3px 7px;border-radius:4px;border:1px solid rgba(18,184,78,.18);}
+.mdist{position:absolute;bottom:9px;left:9px;z-index:400;background:rgba(255,255,255,.92);border:1px solid var(--bd);padding:5px 9px;border-radius:7px;display:flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:11px;color:var(--t1);}
+.mdist b{font-weight:600;color:var(--g);}
 
-/* SENSOR CARD */
+/* GPS LAYOUT */
+.gps-row{display:flex;gap:7px;margin-bottom:9px;}
+.gc{flex:1;background:#ffffff;border:1px solid var(--bd);border-radius:10px;padding:8px 10px;}
+.gc-l{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--t3);letter-spacing:.5px;margin-bottom:3px;}
+.gc-v{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t1);}
+
+/* SENSOR DASHBOARD COMPONENT */
 .sc{background:#E7F5E9;border:1px solid #c4e4c8;border-radius:13px;padding:13px 14px;margin-bottom:9px;position:relative;overflow:hidden;}
-.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--g),var(--o));}
-.sc.alarm::before{background:var(--r);}
-.sc-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-.sc-tag{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:600;color:var(--t2);letter-spacing:.5px;}
-.sc-id{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:#1e462b;margin-top:2px;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--g),transparent);}
+.sc.danger::before{background:linear-gradient(90deg,var(--r),transparent);}
+.sc-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;}
+.sc-tag{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--g);letter-spacing:.7px;}
+.sc.danger .sc-tag{color:var(--r);}
+.sc-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:#2a6040;margin-top:2px;}
+.sig{display:flex;align-items:center;gap:5px;background:rgba(18,184,78,.1);border:1px solid rgba(18,184,78,.22);padding:4px 8px;border-radius:7px;}
+.sig-b{display:flex;gap:2px;align-items:flex-end;}
+.sig-b span{display:block;width:3px;background:var(--g);border-radius:1px;}
+.sig-b span:nth-child(1){height:5px;}.sig-b span:nth-child(2){height:8px;}.sig-b span:nth-child(3){height:10px;}.sig-b span:nth-child(4){height:13px;}
+.sig-t{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--g);}
+
 .tv{display:flex;align-items:flex-end;gap:4px;margin-bottom:11px;}
-.tv-n{font-family:'Inter',sans-serif;font-size:48px;font-weight:300;color:#1e3322;line-height:1;letter-spacing:-1px;}
-.tv-u{font-family:'Inter',sans-serif;font-size:18px;font-weight:300;color:#5a705f;margin-bottom:5px;}
-.tv-note{margin-left:auto;margin-bottom:4px;text-align:right;}
-.tv-nl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);}
-.tv-nv{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--g);}
-.tv-nv.alert{color:var(--r);animation:blink 1s infinite;}
-@keyframes blink {0%,100%{opacity:1;}50%{opacity:0.4;}}
+.tv-n{font-family:'Inter',sans-serif;font-size:52px;font-weight:300;color:#2a3426;line-height:1;letter-spacing:-2px;}
+.tv-u{font-family:'Inter',sans-serif;font-size:19px;font-weight:300;color:#7a9070;margin-bottom:7px;}
+.tv-note{margin-left:auto;margin-bottom:7px;text-align:right;}
+.tv-nl{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:#7a9070;}
+.tv-nv{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#12b84e;}
 
 .mr{display:flex;gap:7px;}
-.mc2{flex:1;background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.9);border-radius:8px;padding:7px 9px;}
-.mc2-l{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:#5a7361;letter-spacing:.3px;}
-.mc2-v{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:#1a2b1f;margin-top:2px;}
+.mc2{flex:1;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);border-radius:8px;padding:7px 9px;}
+.mc2-l{font-family:'JetBrains Mono',monospace;font-size:7px;color:#5a7860;letter-spacing:.5px;}
+.mc2-v{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:#2a3c26;margin-top:2px;}
 
-/* SYSTEM STATS GRID */
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;}
-.sbox{background:#ffffff;border:1px solid var(--bd);border-radius:12px;padding:12px;}
-.sl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);letter-spacing:.5px;margin-bottom:4px;}
-.sv{font-family:'Inter',sans-serif;font-size:24px;font-weight:400;color:var(--t1);line-height:1;}
-.su{font-family:'Inter',sans-serif;font-size:11px;color:var(--t3);margin-left:2px;}
-.ssub{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t3);margin-top:4px;}
+/* ALARM NOTIFICATION BANNER */
+.wb{border-radius:9px;padding:10px 12px;margin-bottom:9px;display:none;align-items:center;gap:9px;animation:shake 0.5s infinite alternate;}
+@keyframes shake { 0% { transform: translateX(0); } 100% { transform: translateX(2px); } }
+.wb.show{display:flex;}
+.wb.crit{background:rgba(196,48,48,.1);border:1px solid rgba(196,48,48,.3);color:var(--r);}
+.wb-t{font-family:'Inter',sans-serif;font-size:12px;font-weight:600;}
 
-/* LAB TESTING GRAPHIC (TGA/DSC) */
-.lab-card {background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:9px;}
-.lab-bar-w {background:rgba(0,0,0,.05);height:6px;border-radius:3px;overflow:hidden;margin:6px 0 12px;}
-.lab-bar {height:100%;background:var(--g);border-radius:3px;transition:width 0.5s;}
+/* ALARM CHIPS */
+.ar{display:flex;gap:7px;margin-bottom:9px;}
+.ac{flex:1;border-radius:9px;padding:9px 11px;display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;}
+.ac.ok{background:rgba(18,184,78,.07);border:1px solid rgba(18,184,78,.18);color:#0e7a38;}
+.ac.cr{background:rgba(196,48,48,.07);border:1px solid rgba(196,48,48,.2);color:#7a1a1a;}
+.ac-dot{width:6px;height:6px;border-radius:50%;background:var(--g);margin-left:auto;}
+.ac.cr .ac-dot{background:var(--r);animation:p 1s infinite;}
 
-/* NODES LIST */
-.nr{display:flex;align-items:center;padding:9px 0;border-bottom:1px solid rgba(0,0,0,.04);gap:9px;}
+/* 1 TX 1 RX NODE STYLE */
+.nr{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.05);gap:9px;}
 .nr:last-child{border-bottom:none;padding-bottom:0;}
 .nd{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.nd.ok{background:var(--g);}.nd.wn{background:var(--o);}.nd.er{background:var(--r);}
-.ni2{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t1);font-weight:500;width:80px;}
-.nt{font-family:'Inter',sans-serif;font-size:12px;color:var(--t2);width:70px;}
+.nd.ok{background:var(--g);}
+.nd.mrx{background:var(--b);}
+.ni2{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);width:75px;flex-shrink:0;}
+.nt{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);width:110px;}
 .nb-w{flex:1;height:4px;background:rgba(0,0,0,.06);border-radius:2px;overflow:hidden;}
-.nb{height:100%;background:var(--g);border-radius:2px;}
-.ns{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;width:55px;text-align:right;}
+.nb{height:100%;border-radius:2px;}
+.nb.ok{background:var(--g);}
+.nb.mrx{background:var(--b);}
+.ns{font-family:'JetBrains Mono',monospace;font-size:8.5px;text-align:right;}
+.ns.ok{color:var(--g);}
+.ns.mrx{color:var(--b);}
 
-/* LOG ALARMS */
-.alr{padding:9px 0;border-bottom:1px solid rgba(0,0,0,.04);display:flex;gap:10px;align-items:flex-start;}
+/* STAT GRID */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;}
+.sbox{background:#ffffff;border:1px solid var(--bd);border-radius:12px;padding:12px;}
+.sl{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t3);letter-spacing:.6px;margin-bottom:4px;}
+.sv{font-family:'Inter',sans-serif;font-size:24px;font-weight:400;color:var(--t1);line-height:1;}
+.su{font-family:'Inter',sans-serif;font-size:11px;color:var(--t3);margin-left:2px;}
+.ssub{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t4);margin-top:4px;}
+
+/* LOG LIST STYLE */
+.alr{padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);display:flex;gap:9px;align-items:flex-start;}
 .alr:last-child{border-bottom:none;}
-.alr-i{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(0,0,0,.03);}
-.alr-msg{font-family:'Inter',sans-serif;font-size:12px;color:var(--t1);line-height:1.4;}
-.alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);margin-top:2px;display:block;}
-.ab{display:inline-block;padding:1px 5px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:7.5px;font-weight:500;margin-top:3px;}
-.ab.supabase{background:rgba(36,104,176,.1);color:#1448a0;}
-.ab.python {background:rgba(212,160,32,.1);color:#8a6508;}
-.ab.ntfy{background:rgba(196,48,48,.1);color:var(--r);}
+.alr-time{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);width:45px;margin-top:2px;}
+.alr-msg{font-family:'Inter',sans-serif;font-size:12.5px;color:var(--t1);flex:1;}
+.ab{display:inline-block;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:7.5px;font-weight:500;margin-top:3px;}
+.ab.g{background:rgba(18,184,78,.08);color:var(--g);}
+.ab.w{background:rgba(196,48,48,.08);color:var(--r);}
 
-/* BOTTOM NAV */
-.bnav{position:absolute;bottom:0;left:0;right:0;height:64px;height:calc(64px + env(safe-area-inset-bottom));background:#ffffff;border-top:1px solid var(--bd);display:flex;align-items:flex-start;padding:5px 2px 0;padding-bottom:env(safe-area-inset-bottom);z-index:100;}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;border-radius:9px;}
-.ni svg{width:19px;height:19px;fill:none;stroke:var(--t4);stroke-width:1.8;}
-.ni span{font-family:'Inter',sans-serif;font-size:8.5px;font-weight:500;color:var(--t4);text-align:center;white-space:nowrap;}
-.ni.active svg{stroke:var(--g);}
-.ni.active span{color:var(--g);font-weight:600;}
+/* DOWNLOAD & DOCUMENTATION SECTION (SON SAYFA) */
+.doc-card{background:#ffffff;border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;transition:all 0.2s;}
+.doc-card:active{transform:scale(0.98);background:#f9fbf9;}
+.doc-icon{width:40px;height:40px;background:#fff0f0;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--r);flex-shrink:0;}
+.doc-icon.img-type{background:#e8f4fd;color:var(--b);}
+.doc-info{flex:1;}
+.doc-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);}
+.doc-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);margin-top:2px;}
+.doc-btn{background:var(--c1);color:#1a5a30;border:1px solid #c4e4c8;border-radius:6px;padding:6px 10px;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;text-decoration:none;display:inline-block;}
 
-.ph{padding:12px 0 8px;}
+/* PAGE HEADER */
+.ph{padding:13px 0 7px;}
 .ph-t{font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:var(--t1);}
-.ph-s{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);margin-top:2px;}
+.ph-s{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--t4);margin-top:3px;}
+
+/* BOTTOM NAV BAR */
+.bnav{position:absolute;bottom:0;left:0;right:0;height:64px;height:calc(64px + env(safe-area-inset-bottom));background:#ffffff;border-top:1px solid var(--bd);display:flex;align-items:flex-start;padding:5px 5px 0;padding-bottom:env(safe-area-inset-bottom);z-index:100;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;border-radius:9px;transition:.12s;}
+.ni svg{width:18px;height:18px;fill:none;stroke:var(--t4);stroke-width:1.5;}
+.ni span{font-family:'Inter',sans-serif;font-size:9px;font-weight:500;color:var(--t4);}
+.ni.active svg{stroke:var(--g);stroke-width:2;}
+.ni.active span{color:var(--g);font-weight:600;}
 </style>
 </head>
 <body>
@@ -135,446 +183,350 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:
 <div class="screen">
 
   <div class="sb">
-    <span class="sb-t" id="clk">21:49</span>
-    <div style="display:flex;align-items:center;gap:5px;background:#e2f2e6;border:1px solid #b7dfbf;padding:3px 9px;border-radius:14px;">
+    <span class="sb-t" id="clk">22:28</span>
+    <div style="display:flex;align-items:center;gap:5px;background:#e0f5e8;border:1px solid #b0dfc0;padding:3px 9px;border-radius:14px;">
       <div class="dot"></div>
-      <span style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:var(--g);">SUPABASE REALTIME</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--g);">CANLI</span>
     </div>
   </div>
 
   <div class="hdr">
-    <div>
-      <div class="hdr-title">Akıllı Orman Gözlemcisi (AOG)</div>
-      <div class="hdr-sub">DEFENDERS OF GREEN • TEKNOFEST 2026</div>
+    <div class="logo-area">
+      <div style="width:24px;height:24px;background:var(--g);border-radius:6px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;font-size:12px;">A</div>
+      <div>
+        <div class="logo-title">AOG Kontrol</div>
+        <div class="hdr-sub">AKILLI ORMAN GÖZLEMCİSİ</div>
+      </div>
     </div>
     <div class="badge">
-      <span class="badge-t">GATEWAY ONLINE</span>
+      <span class="badge-t" id="lora-status">LoRa LINK OK</span>
     </div>
   </div>
 
-  <div class="page active" id="page-harita">
+  <div id="p-home" class="page active">
     <div class="cnt">
-      <div class="mcard"><div id="leafletMap"></div></div>
-      
-      <div class="lbl">Saha Kritik Akış Noktası (Uç Veri)</div>
-      
-      <div class="sc" id="primarySensorCard">
+      <div class="ph">
+        <h1 class="ph-t">Sistem Durumu</h1>
+        <p class="ph-s">ANLIK RSP PICO 2W VERİ AKIŞI</p>
+      </div>
+
+      <div id="alert-banner" class="wb crit">
+        <span class="wb-t">⚠️ KRİTİK YANGIN RİSKİ: YÜKSEK SICAKLIK / GAZ TESPİT EDİLDİ!</span>
+      </div>
+
+      <div id="sensor-card" class="sc">
         <div class="sc-h">
           <div>
-            <div class="sc-tag">MAX6675 TERMOKUPL</div>
-            <div class="sc-id" id="node-id-lbl">Düğüm: AOG-S01 (Merkez)</div>
+            <div class="sc-tag" id="risk-lbl">GÜVENLİ</div>
+            <div class="sc-id">TX-01 (Uzak Düğüm)</div>
           </div>
-          <div style="text-align:right;">
-            <div class="sc-tag" style="color:var(--g);">LoRa BAĞLANTISI</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);" id="node-rssi">-68 dBm</div>
+          <div class="sig">
+            <div class="sig-b">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <span class="sig-t" id="rssi-val">-68 dBm</span>
           </div>
         </div>
-        
         <div class="tv">
-          <span class="tv-n" id="mainTemp">26.4</span>
+          <span class="tv-n" id="main-temp">24.8</span>
           <span class="tv-u">°C</span>
           <div class="tv-note">
-            <div class="tv-nl">DİFERANSİYEL GRADYAN</div>
-            <div class="tv-nv" id="mainGrad">+0.02 °C/sn</div>
+            <div class="tv-nl">HAVA KALİTESİ</div>
+            <div class="tv-nv" id="gas-lbl">TEMİZ</div>
           </div>
         </div>
-        
         <div class="mr">
           <div class="mc2">
-            <div class="mc2-l">İŞLEMCİ MİMARİSİ</div>
-            <div class="mc2-v" style="font-family:'JetBrains Mono',monospace;font-size:11px;">ESP32-S3 (LX7)</div>
+            <div class="mc2-l">NEM ORAMI</div>
+            <div class="mc2-v" id="main-hum">%42.5</div>
           </div>
           <div class="mc2">
-            <div class="mc2-l">DONANIM PERİYODU</div>
-            <div class="mc2-v" id="sleep-status">Deep Sleep Cycle</div>
+            <div class="mc2-l">PİL GERİLİMİ</div>
+            <div class="mc2-v" id="main-bat">3.94 V</div>
           </div>
+        </div>
+      </div>
+
+      <div class="ar">
+        <div id="chip-smoke" class="ac ok">
+          <span>Gaz / Duman</span>
+          <div class="ac-dot"></div>
+        </div>
+        <div id="chip-temp" class="ac ok">
+          <span>Isı Eşiği</span>
+          <div class="ac-dot"></div>
         </div>
       </div>
 
       <div class="sg">
         <div class="sbox">
-          <div class="sl">ASENKRON EVENT LOOP</div>
-          <div class="sv" id="loopSpeed" style="color:var(--g); font-family:'JetBrains Mono',monospace; font-size:20px;">Aktif</div>
-          <div class="ssub">Python Asyncio Engine</div>
+          <div class="sl">GÜNEŞ PANELİ</div>
+          <div class="sv" id="stat-solar">1.2<span class="su">W</span></div>
+          <div class="ssub">Şarj Akımı: 240 mA</div>
         </div>
         <div class="sbox">
-          <div class="sl">NTFY.SH ENTEGRASYONU</div>
-          <div class="sv" style="font-size:16px; font-weight:600; margin-top:4px;" id="ntfyStatus">HAZIR (P5 Siren)</div>
-          <div class="ssub">Acil Durum Kanalı</div>
+          <div class="sl">ALINAN PAKET</div>
+          <div class="sv" id="stat-packets">1,402</div>
+          <div class="ssub">Kayıp Paket: %0.0</div>
         </div>
       </div>
 
-      <button class="btn" onclick="triggerSimulation()" style="width:100%; background:var(--t1); color:#fff; border:none; padding:12px; font-weight:600; border-radius:8px; margin-top:4px; font-family:'Inter',sans-serif;">Yangın Parlama Simülasyonunu Başlat</button>
+      <div class="ca">
+        <div class="lbl">SİSTEM OLAY LOGLARI (BUGÜN)</div>
+        <div id="log-container">
+          <div class="alr">
+            <span class="alr-time">22:15:04</span>
+            <div class="alr-msg">
+              TX-01 Düğümünden LoRa veri paketi başarıyla alındı.
+              <br><span class="ab g">BAŞARILI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <div class="page" id="page-istasyonlar">
+  <div id="p-map" class="page">
     <div class="cnt">
       <div class="ph">
-        <div class="ph-t">Saha İstasyon Ağ Yapısı</div>
-        <div class="ph-s">LoRa Hibrit Mesh/Yıldız Topolojisi Kapsama Alanı</div>
+        <h1 class="ph-t">Coğrafi Konum Takibi</h1>
+        <p class="ph-s">TX VE RX NOKTALARININ GERÇEK ZAMANLI MESAFESİ</p>
       </div>
-      <div class="ca">
-        <div class="lbl">Aktif Düğümler (Uç Noktalar)</div>
-        <div id="nodes-list-container"></div>
+
+      <div class="mcard">
+        <div class="mlbl">GPS AKTİF (3D FIX)</div>
+        <div id="leafletMap"></div>
+        <div class="mdist">İki Ünite Arası Mesafe: <b id="map-distance">345 m</b></div>
+      </div>
+
+      <div class="gps-row">
+        <div class="gc">
+          <div class="gc-l">TX VERİCİ LAT/LNG</div>
+          <div class="gc-v" id="gps-tx">39.7645, 30.5234</div>
+        </div>
+        <div class="gc">
+          <div class="gc-l">RX ALICI LAT/LNG</div>
+          <div class="gc-v" id="gps-rx">39.7621, 30.5211</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="page" id="page-kaplama">
+  <div id="p-nodes" class="page">
     <div class="cnt">
       <div class="ph">
-        <div class="ph-t">Biyolojik Koruma Kalkanı</div>
-        <div class="ph-s">Aloe Vera & Silika Tabanlı Yangın Geciktirici Kaplama</div>
+        <h1 class="ph-t">Ağ Topolojisi (1 TX / 1 RX)</h1>
+        <p class="ph-s">SİSTEMDE TANIMLI AKTİF DONANIMLAR</p>
       </div>
-      
+
       <div class="ca">
-        <div class="lbl">Laboratuvar Karakterizasyon Verileri</div>
+        <div class="lbl">BAĞLANTI LİSTESİ VE SİNYAL GÜCÜ</div>
         
-        <div class="lab-card">
-          <div style="display:flex; justify-content:space-between; font-size:11px; font-family:'JetBrains Mono',monospace;">
-            <span>TGA Kütle Korunumu (Teorik Sınır)</span>
-            <span style="font-weight:600; color:var(--g);">%84.2</span>
+        <div class="nr">
+          <div class="nd ok"></div>
+          <div class="ni2">NODE-01 (TX)</div>
+          <div class="nt">Verici (Pico 2W)</div>
+          <div class="nb-w">
+            <div class="nb ok" style="width: 85%"></div>
           </div>
-          <div class="lab-bar-w"><div class="lab-bar" style="width:84.2%;"></div></div>
-          <p style="font-size:11px; color:var(--t2); line-height:1.4;">Yüksek sıcaklıkta Aloe vera içindeki su buharlaşarak endotermik ısı emilimi sağlar; pirinç ve yumurta kabuğu külleri birleşerek oksijen akışını kesen seramik bariyer zırhı (Char Layer) üretir.</p>
+          <div class="ns ok">Çevrimiçi</div>
         </div>
 
-        <div class="lab-card">
-          <div style="display:flex; justify-content:space-between; font-size:11px; font-family:'JetBrains Mono',monospace;">
-            <span>DSC Termal Koruma Sınırı</span>
-            <span style="font-weight:600; color:var(--g);">Kritik Eşik Güvende</span>
+        <div class="nr">
+          <div class="nd mrx"></div>
+          <div class="ni2">GATEWAY (RX)</div>
+          <div class="nt">Merkez Alıcı İstasyon</div>
+          <div class="nb-w">
+            <div class="nb mrx" style="width: 100%"></div>
           </div>
-          <div class="lab-bar-w"><div class="lab-bar" style="width:100%; background:var(--b);"></div></div>
-          <p style="font-size:11px; color:var(--t2); line-height:1.4;">Kaplamanın endotermik reaksiyon kapasitesi, alev ısısını içeride hapsederek gömülü elektroniğin (ESP32-S3) kritik dakikalar boyunca veri aktarımına devam etmesini garantiler.</p>
+          <div class="ns mrx" style="color: var(--b);">MERKEZ</div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div class="page" id="page-analiz">
-    <div class="cnt">
-      <div class="ph">
-        <div class="ph-t">YTÜ Resmi Analiz Raporu</div>
-        <div class="ph-s">Eş Zamanlı TGA-DSC ve FTIR-ATR Spektroskopisi Değerlendirmesi</div>
       </div>
 
-      <div class="ca" style="background:#fff; border-color:var(--bd);">
-        <div class="lbl">Cihaz ve Metot Parametreleri (24-25 Haziran 2026)</div>
-        <div style="font-size:11px; line-height:1.6; color:var(--t2); font-family:'JetBrains Mono',monospace;">
-          • <b>Laboratuvar:</b> Yıldız Teknik Üniversitesi Merkez Lab.<br>
-          • <b>Cihazlar:</b> NETZSCH STA 449F3 / PerkinElmer Spectrum IR<br>
-          • <b>Koşullar:</b> 25°C → 600°C (10.0 L/dk, Atmosfer: Sentetik Hava / Purge AIR)
-        </div>
-      </div>
-
-      <div class="ca" style="background:#fff; border-color:var(--bd);">
-        <div class="lbl">YTÜ Merkez Lab Ham Excel Veri Setleri (Cloud)</div>
-        <div style="display:flex; flex-direction:column; gap:7px; margin-top:5px;">
-          <a href="https://docs.google.com/spreadsheets/d/1Zowln2LvoQSLpxY8v1I17Baav20Z12Zh/edit?usp=sharing&ouid=111456120535207323781&rtpof=true&sd=true" target="_blank" style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--b); text-decoration:none; font-family:'JetBrains Mono',monospace; background:rgba(36,104,176,0.06); padding:8px 11px; border-radius:7px; border:1px solid rgba(36,104,176,0.15); transition: background 0.2s;">
-            <svg viewBox="0 0 24 24" style="width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            ExpAll_Numune_A_Karisim.xlsx
-          </a>
-          <a href="https://docs.google.com/spreadsheets/d/1X8YwHzDKuOG0zZ6u-KsNLaziuiGDB5_d/edit?usp=sharing&ouid=111456120535207323781&rtpof=true&sd=true" target="_blank" style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--r); text-decoration:none; font-family:'JetBrains Mono',monospace; background:rgba(196,48,48,0.06); padding:8px 11px; border-radius:7px; border:1px solid rgba(196,48,48,0.15); transition: background 0.2s;">
-            <svg viewBox="0 0 24 24" style="width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            ExpAll_Numune_B_Kontrol_Ahsap.xlsx
-          </a>
-          <a href="https://docs.google.com/spreadsheets/d/1Y2BV3aYCpQXo0cQI-vB22moXKPAucnpw/edit?usp=sharing&ouid=111456120535207323781&rtpof=true&sd=true" target="_blank" style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--g); text-decoration:none; font-family:'JetBrains Mono',monospace; background:rgba(18,184,78,0.06); padding:8px 11px; border-radius:7px; border:1px solid rgba(18,184,78,0.15); transition: background 0.2s;">
-            <svg viewBox="0 0 24 24" style="width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            ExpAll_Numune_C_Taze_Kaplama.xlsx
-          </a>
-          <a href="https://docs.google.com/spreadsheets/d/1Zowln2LvoQSLpxY8v1I17Baav20Z12Zh/edit?usp=sharing&ouid=111456120535207323781&rtpof=true&sd=true" target="_blank" style="display:flex; align-items:center; gap:8px; font-size:11px; color:var(--o); text-decoration:none; font-family:'JetBrains Mono',monospace; background:rgba(212,160,32,0.06); padding:8px 11px; border-radius:7px; border:1px solid rgba(212,160,32,0.15); transition: background 0.2s;">
-            <svg viewBox="0 0 24 24" style="width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            ExpAll_Numune_D_Yaslandirilmis.xlsx
-          </a>
-        </div>
-      </div>
-
-      <div class="lbl">Numune Bazlı Karşılaştırmalı Termal Karakterizasyon</div>
-
-      <div class="ca" style="border-left:4px solid var(--b);">
-        <div style="display:flex; justify-content:between; align-items:center; margin-bottom:4px;">
-          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--b);">Numune A: Karışımın Kendisi</span>
-          <span style="font-family:'JetBrains Mono',monospace; font-size:8px; background:rgba(36,104,176,0.1); color:var(--b); padding:2px 5px; border-radius:4px; margin-left:auto;">İnorganik Matris</span>
-        </div>
-        <div style="font-size:11px; color:var(--t2); line-height:1.4;">
-          600°C termal tarama sonunda <b>%96.71 kalan kütle</b> ile olağanüstü inorganik kararlılık ispatlanmıştır. Toplam kütle kaybı sadece %3.27 seviyesindedir. FTIR'deki 667.20 $\text{cm}^{-1}$ karbonat bandı, $\text{CaCO}_3$ ve $\text{SiO}_2$ kaynaklı seramik bariyer yapısını doğrudan doğrulamaktadır.
-        </div>
-      </div>
-
-      <div class="ca" style="border-left:4px solid var(--r);">
-        <div style="display:flex; justify-content:between; align-items:center; margin-bottom:4px;">
-          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--r);">Numune B: Kontrol Ahşap (Kaplamasız)</span>
-          <span style="font-family:'JetBrains Mono',monospace; font-size:8px; background:rgba(196,48,48,0.1); color:var(--r); padding:2px 5px; border-radius:4px; margin-left:auto;">Yüksek Risk</span>
-        </div>
-        <div style="font-size:11px; color:var(--t2); line-height:1.4;">
-          399.2°C'de tüm veri setinin en şiddetli bozunma hızı piki (<b>-20.28 %/dk</b>) gözlenmiştir. DSC ısı akışındaki 32 mW/mg sivri ekzotermik tepe, malzemenin dar aralıkta ani ve şiddetli tutuşma gösterdiğini kanıtlar. Kalan kütle %16.66'dır.
-        </div>
-      </div>
-
-      <div class="ca" style="border-left:4px solid var(--g);">
-        <div style="display:flex; justify-content:between; align-items:center; margin-bottom:4px;">
-          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--g);">Numune C: Taze Kaplanmış Ahşap</span>
-          <span style="font-family:'JetBrains Mono',monospace; font-size:8px; background:rgba(18,184,78,0.1); color:var(--g); padding:2px 5px; border-radius:4px; margin-left:auto;">Taze Bariyer</span>
-        </div>
-        <div style="font-size:11px; color:var(--t2); line-height:1.4;">
-          Maksimum bozunma hızı 3'te 1 oranına düşerek <b>-6.81 %/dk</b> seviyesine bastırılmıştır. Ana bozunma pik sıcaklığı Kontrole kıyasla <b>+25°C gecikerek</b> 424.2°C'ye kaymıştır. DSC'de tek dar tepe yerine iki geniş ve kontrollü enerji salınım alanı oluşmuştur. Kalan kütle %21.05.
-        </div>
-      </div>
-
-      <div class="ca" style="border-left:4px solid var(--o);">
-        <div style="display:flex; justify-content:between; align-items:center; margin-bottom:4px;">
-          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--o);">Numune D: Yaşlandırılmış Kaplı Ahşap</span>
-          <span style="font-family:'JetBrains Mono',monospace; font-size:8px; background:rgba(212,160,32,0.1); color:var(--o); padding:2px 5px; border-radius:4px; margin-left:auto;">99 Gün Sürdürülebilirlik</span>
-        </div>
-        <div style="font-size:11px; color:var(--t2); line-height:1.4;">
-          99 gün boyunca doğal koşullara maruz bırakılan numunede kaplama koruması kararlıdır. Yarı bozunma sıcaklığı <b>$T_{50} = 411.9^\circ\text{C}$</b> ile tüm serideki en yüksek mukavemet noktasına ulaşmıştır (Taze kaplamadan 20°C daha geç yarılanma). Bozunma hızı -8.93 %/dk, kalan kütle %18.71.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="page" id="page-loglar">
-    <div class="cnt">
-      <div class="ph">
-        <div class="ph-t">Supabase Telemetry Olay Akışı</div>
-        <div class="ph-s">Asenkron Python Motoru Canlı Paket Takibi</div>
-      </div>
       <div class="ca">
-        <div class="lbl">Canlı Log Akışı (Sliding Window Hafızası)</div>
-        <div id="log-container" style="max-height:350px; overflow-y:auto;"></div>
+        <div class="lbl">DONANIM SPESİFİKASYONLARI</div>
+        <div class="dr"><span class="dl">Verici İşlemci</span><span class="dv">RP2350 (RSP Pico 2W)</span></div>
+        <div class="dr"><span class="dl">Çevre Birim Sensör</span><span class="dv">BME280 (I2C Adres 0x76)</span></div>
+        <div class="dr"><span class="dl">Radyo Frekans Modülü</span><span class="dv">LoRa E32 433T20D</span></div>
+        <div class="dr"><span class="dl">Haberleşme Protokolü</span><span class="dv">Seri UART (9600 bps)</span></div>
       </div>
+    </div>
+  </div>
+
+  <div id="p-docs" class="page">
+    <div class="cnt">
+      <div class="ph">
+        <h1 class="ph-t">Dosyalar ve Belgeler</h1>
+        <p class="ph-s">PROJE DÖKÜMANTASYONU VE MEDYA VARLIKLARI</p>
+      </div>
+
+      <div class="lbl">PROJE PDF BELGESİ</div>
+      <div class="doc-card">
+        <div class="doc-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-title">Akıllı Orman Gözlemcisi Teknik Sunum PDF</div>
+          <div class="doc-meta">Google Drive Ortak Erişim Linki</div>
+        </div>
+        <a href="https://drive.google.com/file/d/1ihu9W0pE469tRN8RbS7c0BZNiouRVI1-/view?usp=sharing" target="_blank" class="doc-btn">Görüntüle</a>
+      </div>
+
+      <div class="lbl">İNDİRİLEBİLİR GÖRSEL VARLIKLAR</div>
+
+      <div class="doc-card">
+        <div class="doc-icon img-type">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-title">Cyber Studios Ana Logo</div>
+          <div class="doc-meta">PNG Format - Yüksek Çözünürlük</div>
+        </div>
+        <a href="https://drive.google.com/file/d/CyberStudiosLogoLink/view" target="_blank" class="doc-btn">İndir</a>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-icon img-type">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-title">Nexo Sanal Otomotiv Logosu</div>
+          <div class="doc-meta">BABFT Tasarım Brand Asset</div>
+        </div>
+        <a href="https://drive.google.com/file/d/NexoBrandLogoLink/view" target="_blank" class="doc-btn">İndir</a>
+      </div>
+
+      <div class="doc-card">
+        <div class="doc-icon img-type">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        </div>
+        <div class="doc-info">
+          <div class="doc-title">RSP Pico 2W & BME280 Bağlantı Şeması</div>
+          <div class="doc-meta">Fritzing Donanım Devre Çizimi</div>
+        </div>
+        <a href="https://drive.google.com/file/d/CircuitDiagramLink/view" target="_blank" class="doc-btn">İndir</a>
+      </div>
+
     </div>
   </div>
 
 </div>
 
 <div class="bnav">
-  <div class="ni active" onclick="switchTab('harita', this)">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-    <span>Gösterge</span>
+  <div class="ni active" data-target="p-home">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+    <span>Ana Sayfa</span>
   </div>
-  <div class="ni" onclick="switchTab('istasyonlar', this)">
-    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-    <span>İstasyonlar</span>
+  <div class="ni" data-target="p-map">
+    <svg viewBox="0 0 24 24"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" y1="3" x2="9" y2="18"></line><line x1="15" y1="6" x2="15" y2="21"></line></svg>
+    <span>Harita</span>
   </div>
-  <div class="ni" onclick="switchTab('kaplama', this)">
-    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    <span>Zırh</span>
+  <div class="ni" data-target="p-nodes">
+    <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+    <span>Cihazlar</span>
   </div>
-  <div class="ni" onclick="switchTab('analiz', this)">
-    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    <span>YTÜ Analiz</span>
-  </div>
-  <div class="ni" onclick="switchTab('loglar', this)">
-    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    <span>Canlı Log</span>
+  <div class="ni" data-target="p-docs">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+    <span>Belgeler</span>
   </div>
 </div>
 
 </div>
 
 <script>
-// Tab Geçiş Mantığı
-function switchTab(pageId, element) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + pageId).classList.add('active');
-  element.classList.add('active');
-  if(pageId === 'harita') { setTimeout(() => { map.invalidateSize(); }, 200); }
-}
-
-// Leaflet Harita Kurulumu
-var map = L.map('leafletMap', {zoomControl: false, attributionControl: false}).setView([40.1235, 29.4567], 14);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {maxZoom: 19}).addTo(map);
-
-// Saha İstasyon Verileri
-var nodesData = [
-  {id: 'AOG-S01', name: 'Kuzey Yamaç Girişi', lat: 40.1235, lng: 29.4567, temp: 26.4, grad: 0.02, rssi: -68, status: 'ok'},
-  {id: 'AOG-S02', name: 'Derin Orman Kör Nokta', lat: 40.1299, lng: 29.4610, temp: 24.1, grad: 0.01, rssi: -74, status: 'ok'},
-  {id: 'AOG-S03', name: 'Güney Sınır Hattı', lat: 40.1185, lng: 29.4490, temp: 28.9, grad: -0.04, rssi: -62, status: 'ok'},
-  {id: 'AOG-S04', name: 'Kızılçam Sık Bölge', lat: 40.1310, lng: 29.4720, temp: 25.6, grad: 0.03, rssi: -81, status: 'ok'}
-];
-
-var markers = {};
-nodesData.forEach(function(n) {
-  var markerIcon = L.divIcon({
-    className: 'custom-marker',
-    html: `<div style="background:${n.status==='ok'?'#12b84e':'#c43030'}; width:12px; height:12px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 6px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [12, 12]
+// SEKMELER ARASI GEÇİŞ MOTORU
+document.querySelectorAll('.ni').forEach(button => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.ni').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    
+    button.classList.add('active');
+    const targetPage = button.getAttribute('data-target');
+    document.getElementById(targetPage).classList.add('active');
+    
+    if(targetPage === 'p-map') {
+      setTimeout(() => { myMap.invalidateSize(); }, 200);
+    }
   });
-  var marker = L.marker([n.lat, n.lng], {icon: markerIcon}).addTo(map);
-  markers[n.id] = marker;
 });
 
-// İstasyonlar Listesini Render Etme
-function renderNodes() {
-  const container = document.getElementById('nodes-list-container');
-  if(!container) return;
-  container.innerHTML = nodesData.map(n => `
-    <div class="nr">
-      <div class="nd ${n.status}"></div>
-      <div class="ni2">${n.id}</div>
-      <div class="nt">${n.name}</div>
-      <div class="nb-w">
-        <div class="nb" style="width: ${(n.temp / 80 * 100)}%; background: ${n.status==='alarm'?'var(--r)':'var(--g)'};"></div>
-      </div>
-      <div class="ns" style="color:${n.status==='alarm'?'var(--r)':'var(--t1)'}">${n.temp.toFixed(1)}°C</div>
-    </div>
-  `).join('');
-}
-renderNodes();
-
-// Canlı Log Sistemi
-function addLog(message, microservice) {
-  const container = document.getElementById('log-container');
-  if(!container) return;
-  const now = new Date();
-  const timeStr = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
-  
-  let labelClass = 'supabase';
-  if(microservice === 'PYTHON ENGINE') labelClass = 'python';
-  if(microservice === 'NTFY.SH API') labelClass = 'ntfy';
-
-  const logHtml = `
-    <div class="alr">
-      <div class="alr-i"><span class="ab ${labelClass}">${microservice.split(' ')[0]}</span></div>
-      <div>
-        <span class="alr-msg">${message}</span>
-        <span class="alr-time">${timeStr}</span>
-      </div>
-    </div>
-  `;
-  container.insertAdjacentHTML('afterbegin', logHtml);
-}
-
-// Başlangıç Logları
-setTimeout(() => addLog("Supabase Realtime WebSocket kanalı dinleniyor... [Table: telemetry]", "SUPABASE REALTIME"), 200);
-setTimeout(() => addLog("Python asyncio event loop kilitlenmeden aktif çalışıyor.", "PYTHON ENGINE"), 600);
-setTimeout(() => addLog("YTÜ TGA-DSC / FTIR-ATR doğrulamalı kalibrasyon matrisi yüklendi.", "PYTHON ENGINE"), 1000);
-setTimeout(() => addLog("Google Drive ham Excel veri setleri (ExpAll) sisteme entegre edildi.", "SUPABASE REALTIME"), 1400);
-
-// Zaman Güncelleme
+// SAAT GÜNCELLEME
 setInterval(() => {
-  const now = new Date();
-  const clkEl = document.getElementById('clk');
-  if(clkEl) clkEl.textContent = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const d = new Date();
+  document.getElementById('clk').innerText = d.toTimeString().substring(0,5);
 }, 1000);
 
-// Yangın Simülasyon Algoritması (Diferansiyel Gradyan Testi)
-let simInterval;
-let isSimulating = false;
+// LEAFLET MAP KURULUMU (Eskişehir Orman Bölgesi Odaklı Örnek Coğrafya)
+const myMap = L.map('leafletMap', {zoomControl: false}).setView([39.7635, 30.5222], 16);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(myMap);
 
-function triggerSimulation() {
-  if(isSimulating) return;
-  isSimulating = true;
-  
-  let temp = 26.4;
-  let timeStep = 0;
-  
-  document.getElementById('primarySensorCard').classList.add('alarm');
-  document.getElementById('sleep-status').textContent = "HARDWARE WAKEUP (INT)";
-  document.getElementById('sleep-status').style.color = "var(--r)";
-  
-  addLog("AOG-S01 İstasyonundan kritik donanım kesmesi (hardware interrupt) tetiklendi!", "SUPABASE REALTIME");
+// 1 TX ve 1 RX İşaretçileri
+const txIcon = L.divIcon({html: '<div style="width:12px;height:12px;background:#12b84e;border:2px solid white;border-radius:50%;box-shadow:0 0 6px rgba(0,0,0,0.3);"></div>', className:''});
+const rxIcon = L.divIcon({html: '<div style="width:14px;height:14px;background:#2468b0;border:2px solid white;border-radius:50%;box-shadow:0 0 6px rgba(0,0,0,0.3);"></div>', className:''});
 
-  simInterval = setInterval(() => {
-    timeStep++;
-    
-    let randomJump = Math.random() * 4 + 3; 
-    let prevTemp = temp;
-    temp += randomJump;
-    
-    let grad = (temp - prevTemp) / 1;
-    
-    document.getElementById('mainTemp').textContent = temp.toFixed(1);
-    document.getElementById('mainGrad').textContent = `+${grad.toFixed(2)} °C/sn`;
-    document.getElementById('mainGrad').style.color = "var(--r)";
-    
-    nodesData[0].temp = temp;
-    renderNodes();
-    
-    addLog(`Supabase Telemetry güncellendi: AOG-S01 Temp: ${temp.toFixed(1)}°C`, "SUPABASE REALTIME");
-    addLog(`Diferansiyel Motor Analizi -> Mevcut Gradyan: +${grad.toFixed(2)}°C/sn`, "PYTHON ENGINE");
+const markerTX = L.marker([39.7645, 30.5234], {icon: txIcon}).addTo(myMap).bindPopup('TX-01: RSP Pico Verici');
+const markerRX = L.marker([39.7621, 30.5211], {icon: rxIcon}).addTo(myMap).bindPopup('GATEWAY: Merkez Alıcı');
 
-    if(timeStep === 2) {
-      addLog(`Kritik Gradyan Eşiği Aşıldı! Gerçek Zamanlı Yangın Teşhisi Onaylandı!`, "PYTHON ENGINE");
-      document.getElementById('mainGrad').insertAdjacentHTML('beforeend', ' <span class="tv-nv alert">[YANGIN]</span>');
-      
-      document.getElementById('ntfyStatus').textContent = "SİREN ÇALDI (P5)";
-      document.getElementById('ntfyStatus').style.color = "var(--r)";
-      addLog(`ntfy.sh API tetiklendi: [Priority: 5] Acil durum sireni yetkili cihazlara fırlatıldı!`, "NTFY.SH API");
-    }
+// 1 TX 1 RX IoT VERİ SİMÜLASYONU VE YANGIN ERKEN UYARI MANTIĞI
+let totalPackets = 1402;
+function simulateIoTData() {
+  // Rastgele küçük dalgalanmalar oluştur
+  let temp = (23 + Math.random() * 4).toFixed(1);
+  let hum = (40 + Math.random() * 10).toFixed(1);
+  let bat = (3.9 + Math.random() * 0.08).toFixed(2);
+  let solar = (1.0 + Math.random() * 0.4).toFixed(1);
+  
+  // Kritik alarm durum testi tetikleyicisi (%15 olasılıkla yangın tehlike simülasyonu)
+  let testRisk = Math.random() > 0.85;
+  if (testRisk) {
+    temp = (54.3 + Math.random() * 5).toFixed(1); // Kritik sıcaklık
+    document.getElementById('sensor-card').classList.add('danger');
+    document.getElementById('risk-lbl').innerText = '🔥 KRİTİK TEHLİKE';
+    document.getElementById('gas-lbl').innerText = 'DUMAN / GAZ VAR';
+    document.getElementById('alert-banner').classList.add('show');
+    document.getElementById('chip-smoke').className = 'ac cr';
+    document.getElementById('chip-temp').className = 'ac cr';
     
-    if(timeStep >= 5) {
-      clearInterval(simInterval);
-      addLog(`[YTÜ Lab Bariyer Doğrulaması]: Numune C & D verilerine göre seramik bariyer (Char Layer) devrede. İşlemci güvende.`, "PYTHON ENGINE");
-      
-      setTimeout(() => {
-        document.getElementById('primarySensorCard').classList.remove('alarm');
-        document.getElementById('sleep-status').textContent = "Deep Sleep Cycle";
-        document.getElementById('sleep-status').style.color = "";
-        document.getElementById('mainTemp').textContent = "26.4";
-        document.getElementById('mainGrad').textContent = "+0.02 °C/sn";
-        document.getElementById('mainGrad').style.color = "";
-        document.getElementById('ntfyStatus').textContent = "HAZIR (P5 Siren)";
-        document.getElementById('ntfyStatus').style.color = "";
-        nodesData[0].temp = 26.4;
-        renderNodes();
-        isSimulating = false;
-        addLog("Sistem normal izleme moduna (Deep Sleep periyoduna) geri döndü.", "PYTHON ENGINE");
-      }, 6000);
-    }
-  }, 1200);
+    pushOlayLog("UYARI: TX-01 istasyonunda ani sıcaklık artışı ve duman algılandı!", "w");
+  } else {
+    document.getElementById('sensor-card').classList.remove('danger');
+    document.getElementById('risk-lbl').innerText = 'GÜVENLİ';
+    document.getElementById('gas-lbl').innerText = 'TEMİZ';
+    document.getElementById('alert-banner').classList.remove('show');
+    document.getElementById('chip-smoke').className = 'ac ok';
+    document.getElementById('chip-temp').className = 'ac ok';
+  }
+
+  // Değerleri HTML elemanlarına bas
+  document.getElementById('main-temp').innerText = temp;
+  document.getElementById('main-hum').innerText = "%" + hum;
+  document.getElementById('main-bat').innerText = bat + " V";
+  document.getElementById('stat-solar').innerHTML = solar + '<span class="su">W</span>';
+  
+  totalPackets++;
+  document.getElementById('stat-packets').innerText = totalPackets.toLocaleString();
 }
 
-// --- PWA MANIFEST GENERATION ---
-(function() {
-  var manifest = {
-    name: "Akıllı Orman Gözlemcisi",
-    short_name: "AOG",
-    start_url: "./",
-    display: "standalone",
-    background_color: "#F2F6F9",
-    theme_color: "#12b84e",
-    icons: [
-      {
-        src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><circle cx='256' cy='256' r='240' fill='%2312b84e'/><path d='M256 116 L256 256 L340 340' stroke='%23ffffff' stroke-width='36' stroke-linecap='round' fill='none'/></svg>",
-        sizes: "512x512",
-        type: "image/svg+xml",
-        purpose: "any"
-      },
-      {
-        src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><circle cx='256' cy='256' r='240' fill='%23ffffff'/><path d='M256 116 L256 256 L340 340' stroke='%23c43030' stroke-width='36' stroke-linecap='round' fill='none'/></svg>",
-        sizes: "512x512",
-        type: "image/svg+xml",
-        purpose: "maskable"
-      }
-    ]
-  };
-  var blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
-  var url = URL.createObjectURL(blob);
-  var manifestLink = document.getElementById('pwa-manifest');
-  if(manifestLink) manifestLink.href = url;
-})();
-
-// --- INLINE SERVICE WORKER ENGINE ---
-if('serviceWorker' in navigator){
-  var swCode = `
-    const CACHE='aog-v1';
-    const ASSETS=['./',
-      'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap',
-      'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
-      'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'
-    ];
-    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS).catch(()=>{}))));
-    self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
-    self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
+function pushOlayLog(mesaj, tip) {
+  const container = document.getElementById('log-container');
+  const timeStr = new Date().toTimeString().substring(0,8);
+  const badgeClass = tip === "w" ? "ab w" : "ab g";
+  const badgeText = tip === "w" ? "TEHLİKE" : "BAŞARILI";
+  
+  const logRow = document.createElement('div');
+  logRow.className = 'alr';
+  logRow.innerHTML = `
+    <span class="alr-time">${timeStr}</span>
+    <div class="alr-msg">${mesaj}<br><span class="${badgeClass}">${badgeText}</span></div>
   `;
-  var swBlob = new Blob([swCode], {type:'application/javascript'});
-  var swUrl = URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swUrl).catch(err=>console.error("SW Error:", err));
+  container.prepend(logRow);
+  if(container.children.length > 4) container.removeChild(container.lastChild);
 }
+
+// Canlı döngüyü başlat
+setInterval(simulateIoTData, 3500);
 </script>
 </body>
 </html>

@@ -7,935 +7,678 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AOG">
-<meta name="application-name" content="AOG">
-<meta name="theme-color" content="#12b84e">
-<meta name="description" content="Akıllı Orman Gözlemcisi - IoT Orman Yangın Erken Uyarı Sistemi">
-<meta name="msapplication-TileColor" content="#12b84e">
+<meta name="theme-color" content="#F2F6F9">
 <link rel="manifest" id="pwa-manifest">
-<title>AOG – Akıllı Orman Gözlemcisi Kontrol Paneli</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>AOG – Akıllı Orman Gözlemcisi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-
 <style>
-  :root {
-    --bg-primary: #f4f7f6;
-    --bg-surface: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --brand-color: #10b981;
-    --brand-dark: #047857;
-    --brand-light: #e6f4ea;
-    --accent-red: #ef4444;
-    --accent-orange: #f59e0b;
-    --border-color: #e2e8f0;
-    --radius-lg: 16px;
-    --radius-md: 12px;
-    --radius-sm: 8px;
-    --font-sans: 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  [data-theme="dark"] {
-    --bg-primary: #0f172a;
-    --bg-surface: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: #334155;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-  }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  body {
-    font-family: var(--font-sans);
-    background-color: var(--bg-primary);
-    color: var(--text-main);
-    line-height: 1.5;
-    overflow-x: hidden;
-    transition: var(--transition);
-  }
-
-  #app-container {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-  header {
-    background-color: var(--bg-surface);
-    border-bottom: 1px solid var(--border-color);
-    padding: 16px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .header-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .logo-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--brand-color), var(--brand-dark));
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: 1.2rem;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-  }
-
-  .header-title h1 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-  }
-
-  .header-title p {
-    font-size: 0.775rem;
-    color: var(--text-muted);
-  }
-
-  .system-badges {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 50px;
-    font-size: 0.825rem;
-    font-weight: 500;
-    background-color: var(--border-color);
-  }
-
-  .status-badge.online {
-    background-color: var(--brand-light);
-    color: var(--brand-dark);
-  }
-
-  .status-badge.online .dot {
-    background-color: var(--brand-color);
-    animation: pulse 2s infinite;
-  }
-
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-  }
-
-  main {
-    flex: 1;
-    display: flex;
-    position: relative;
-  }
-
-  nav.sidebar {
-    width: 260px;
-    background-color: var(--bg-surface);
-    border-right: 1px solid var(--border-color);
-    padding: 24px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: var(--radius-md);
-    color: var(--text-muted);
-    text-decoration: none;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-  }
-
-  .nav-item:hover {
-    background-color: var(--bg-primary);
-    color: var(--text-main);
-  }
-
-  .nav-item.active {
-    background-color: var(--brand-light);
-    color: var(--brand-dark);
-  }
-
-  .content-viewport {
-    flex: 1;
-    padding: 24px;
-    overflow-y: auto;
-    max-width: 1400px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .tab-panel {
-    display: none;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .tab-panel.active {
-    display: flex;
-  }
-
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 24px;
-  }
-
-  .card {
-    background-color: var(--bg-surface);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    box-shadow: var(--shadow-sm);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 12px;
-  }
-
-  .card-title {
-    font-size: 1rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .metric-group {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .metric-card {
-    background-color: var(--bg-primary);
-    border-radius: var(--radius-md);
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .metric-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .metric-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    font-family: var(--font-mono);
-  }
-
-  .metric-unit {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    margin-left: 2px;
-  }
-
-  #map-wrapper {
-    height: 500px;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-md);
-  }
-
-  .terminal-box {
-    background-color: #0f172a;
-    color: #38bdf8;
-    font-family: var(--font-mono);
-    padding: 16px;
-    border-radius: var(--radius-md);
-    height: 280px;
-    overflow-y: auto;
-    font-size: 0.85rem;
-    border: 1px solid #334155;
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.8);
-  }
-
-  .terminal-line {
-    margin-bottom: 6px;
-    white-space: pre-wrap;
-  }
-
-  .terminal-time {
-    color: #64748b;
-    margin-right: 8px;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 18px;
-    border-radius: var(--radius-md);
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: var(--transition);
-    text-decoration: none;
-  }
-
-  .btn-primary {
-    background-color: var(--brand-color);
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background-color: var(--brand-dark);
-  }
-
-  .btn-outline {
-    border-color: var(--border-color);
-    background-color: var(--bg-surface);
-    color: var(--text-main);
-  }
-
-  .btn-outline:hover {
-    background-color: var(--bg-primary);
-  }
-
-  .chart-canvas {
-    width: 100%;
-    height: 180px;
-    margin-top: 12px;
-    background-color: var(--bg-primary);
-    border-radius: var(--radius-md);
-  }
-
-  .table-responsive {
-    overflow-x: auto;
-    width: 100%;
-    margin-top: 12px;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 0.875rem;
-  }
-
-  th {
-    background-color: var(--bg-primary);
-    padding: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  td {
-    padding: 12px;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-main);
-  }
-
-  tr:hover td {
-    background-color: var(--brand-light);
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 16px;
-    margin-top: 16px;
-  }
-
-  .gallery-item {
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 12px;
-    background-color: var(--bg-surface);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    text-align: center;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .gallery-icon {
-    width: 60px;
-    height: 60px;
-    background-color: var(--bg-primary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: var(--brand-color);
-  }
-
-  .gallery-title {
-    font-size: 0.8rem;
-    font-weight: 500;
-    word-break: break-all;
-    color: var(--text-main);
-    height: 36px;
-    overflow: hidden;
-  }
-
-  @keyframes pulse {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
-    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-  }
-
-  @media (max-width: 768px) {
-    main { flex-direction: column; }
-    nav.sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 12px; }
-    .content-viewport { padding: 16px; }
-    .header-logo span { display: none; }
-  }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{--g:#12b84e;--r:#c43030;--o:#d4a020;--b:#2468b0;--bg:#F2F6F9;--c1:#E7F5E9;--bd:#cdd5c5;--t1:#1a1f18;--t2:#4a5644;--t3:#8a9882;--t4:#b8c4b0;}
+html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:var(--t1);}
+.phone{width:100%;height:100vh;height:100dvh;background:var(--bg);position:relative;overflow:hidden;}
+.screen{position:absolute;top:0;left:0;right:0;bottom:64px;bottom:calc(64px + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.screen::-webkit-scrollbar{display:none;}
+.page{display:none;}.page.active{display:block;}
+.cnt{padding:0 13px 6px;}
+.sb{height:44px;padding:12px 22px 0;padding-top:calc(12px + env(safe-area-inset-top));display:flex;justify-content:space-between;align-items:center;background:var(--bg);position:sticky;top:0;z-index:50;}
+.sb-t{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;color:var(--t1);}
+.hdr{padding:7px 16px 10px;display:flex;align-items:center;gap:10px;background:var(--bg);border-bottom:1px solid var(--bd);}
+.logo{height:33px;width:auto;}
+.hdr-sub{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t4);letter-spacing:.4px;}
+.badge{margin-left:auto;display:flex;align-items:center;gap:5px;background:#dff0e6;border:1px solid #b0d8be;padding:4px 10px;border-radius:16px;}
+.dot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:p 1.8s ease-in-out infinite;}
+@keyframes p{0%,100%{box-shadow:0 0 0 0 rgba(18,184,78,.35);}50%{box-shadow:0 0 0 4px rgba(18,184,78,0);}}
+.badge-t{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;color:var(--g);}
+.ca{background:var(--c1);border:1px solid var(--bd);border-radius:13px;padding:13px 14px;margin-bottom:9px;}
+.cm{background:#E7F5E9;border:1px solid #c4e4c8;border-radius:13px;padding:13px 14px;margin-bottom:9px;}
+.lbl{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--t3);letter-spacing:.8px;margin-bottom:9px;}
+.mcard{margin:9px 0;border-radius:13px;overflow:hidden;border:1px solid var(--bd);position:relative;height:194px;}
+#leafletMap{width:100%;height:100%;}
+.mlbl{position:absolute;top:8px;left:9px;z-index:400;font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--g);background:rgba(255,255,255,.92);padding:3px 7px;border-radius:4px;border:1px solid rgba(18,184,78,.18);}
+.mdist{position:absolute;bottom:9px;left:9px;z-index:400;background:rgba(255,255,255,.92);border:1px solid var(--bd);padding:5px 9px;border-radius:7px;display:flex;align-items:center;gap:5px;font-family:'Inter',sans-serif;font-size:11px;color:var(--t1);}
+.gps-row{display:flex;gap:7px;margin-bottom:9px;}
+.gc{flex:1;background:#ffffff;border:1px solid var(--bd);border-radius:10px;padding:8px 10px;}
+.gc-l{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--t1);letter-spacing:.5px;margin-bottom:3px;}
+.gc-v{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t1);}
+.sc{background:#E7F5E9;border:1px solid #c4e4c8;border-radius:13px;padding:13px 14px;margin-bottom:9px;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--r),transparent);}
+.sc-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;}
+.sc-tag{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:#c43030;letter-spacing:.7px;}
+.sc-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:#2a6040;margin-top:2px;}
+.sig{display:flex;align-items:center;gap:5px;background:rgba(18,184,78,.1);border:1px solid rgba(18,184,78,.22);padding:4px 8px;border-radius:7px;}
+.sig-b{display:flex;gap:2px;align-items:flex-end;}
+.sig-b span{display:block;width:3px;background:var(--g);border-radius:1px;}
+.sig-b span:nth-child(1){height:5px;}.sig-b span:nth-child(2){height:8px;}.sig-b span:nth-child(3){height:10px;}.sig-b span:nth-child(4){height:13px;opacity:.3;}
+.sig-t{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--g);}
+.tv{display:flex;align-items:flex-end;gap:4px;margin-bottom:11px;}
+.tv-n{font-family:'Inter',sans-serif;font-size:52px;font-weight:300;color:#2a3426;line-height:1;letter-spacing:-2px;}
+.tv-u{font-family:'Inter',sans-serif;font-size:19px;font-weight:300;color:#7a9070;margin-bottom:7px;}
+.tv-note{margin-left:auto;margin-bottom:7px;text-align:right;}
+.tv-nl{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:#7a9070;}
+.tv-nv{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#12b84e;}
+.mr{display:flex;gap:7px;}
+.mc2{flex:1;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);border-radius:8px;padding:7px 9px;}
+.mc2-l{font-family:'JetBrains Mono',monospace;font-size:7px;color:#5a7860;letter-spacing:.5px;}
+.mc2-v{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:#2a3c26;margin-top:2px;}
+.ar{display:flex;gap:7px;}
+.ac{flex:1;border-radius:9px;padding:9px 11px;display:flex;align-items:center;gap:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;}
+.ac.ok{background:rgba(18,184,78,.07);border:1px solid rgba(18,184,78,.18);color:#0e7a38;}
+.ac.cr{background:rgba(196,48,48,.05);border:1px solid rgba(196,48,48,.14);color:#7a1a1a;}
+.ac-dot{width:5px;height:5px;border-radius:50%;background:var(--g);margin-left:auto;animation:p 2s infinite;}
+.wb{border-radius:9px;padding:8px 10px;margin-bottom:9px;display:none;align-items:center;gap:7px;}
+.wb.show{display:flex;}
+.wb.weak{background:rgba(212,160,32,.07);border:1px solid rgba(212,160,32,.22);}
+.wb.crit{background:rgba(196,48,48,.07);border:1px solid rgba(196,48,48,.22);}
+.nr{display:flex;align-items:center;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.05);gap:9px;}
+.nr:last-child{border-bottom:none;padding-bottom:0;}
+.nd{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.nd.ok{background:var(--g);}.nd.wn{background:var(--o);}.nd.er{background:var(--r);}
+.ni2{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t2);width:68px;flex-shrink:0;}
+.nt{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);width:52px;}
+.nb-w{flex:1;height:3px;background:rgba(0,0,0,.08);border-radius:2px;overflow:hidden;}
+.nb{height:100%;border-radius:2px;}
+.nb.ok{background:var(--g);}.nb.wn{background:var(--o);}.nb.er{background:var(--r);}
+.ns{font-family:'JetBrains Mono',monospace;font-size:8px;width:40px;text-align:right;}
+.ns.ok{color:var(--g);}.ns.wn{color:var(--o);}.ns.er{color:var(--r);}
+.lab-bar-w{background:rgba(0,0,0,.05);height:6px;border-radius:3px;overflow:hidden;margin:6px 0 10px;}
+.lab-bar{height:100%;background:var(--g);border-radius:3px;}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05);}
+.dr:last-child{border-bottom:none;}
+.dl{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--t3);}
+.dv{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);}
+.alr{padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05);display:flex;gap:9px;align-items:flex-start;}
+.alr:last-child{border-bottom:none;}
+.alr-i{width:27px;height:27px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#E7F5E9;}
+.alr-i svg{width:13px;height:13px;}
+.alr-time{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t4);}
+.alr-msg{font-family:'Inter',sans-serif;font-size:12.5px;color:var(--t1);margin-top:1px;}
+.ab{display:inline-block;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:7.5px;margin-top:3px;}
+.ab.b{background:rgba(36,104,176,.08);color:#1448a0;}
+.ab.w{background:rgba(196,48,48,.08);color:#c43030;}
+.ab.c{background:rgba(196,48,48,.08);color:#7a1010;}
+.ab.g{background:rgba(18,184,78,.08);color:#0e7038;}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;}
+.sbox{background:var(--c1);border:1px solid var(--bd);border-radius:12px;padding:12px;}
+.sl{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t3);letter-spacing:.6px;margin-bottom:4px;}
+.sv{font-family:'Inter',sans-serif;font-size:27px;font-weight:300;color:var(--t1);line-height:1;}
+.su{font-family:'Inter',sans-serif;font-size:12px;color:var(--t3);}
+.ssub{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t4);margin-top:3px;}
+.setr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);}
+.setr:last-child{border-bottom:none;}
+.setl{font-family:'Inter',sans-serif;font-size:13px;color:var(--t1);}
+.sets{font-family:'Inter',sans-serif;font-size:10.5px;color:var(--t3);margin-top:1px;}
+.setv{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t3);}
+.tgl{width:38px;height:21px;background:var(--bd);border-radius:11px;position:relative;cursor:pointer;transition:.18s;flex-shrink:0;}
+.tgl.on{background:var(--g);}
+.tgl::after{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;background:#fff;border-radius:50%;transition:.18s;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.tgl.on::after{left:19px;}
+.ph{padding:13px 0 7px;}
+.ph-t{font-family:'Inter',sans-serif;font-size:18px;font-weight:600;color:var(--t1);}
+.ph-s{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--t4);margin-top:3px;}
+.bnav{position:absolute;bottom:0;left:0;right:0;height:64px;height:calc(64px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--bd);display:flex;align-items:flex-start;padding:5px 2px 0;padding-bottom:env(safe-area-inset-bottom);z-index:100;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 0;border-radius:9px;transition:.12s;}
+.ni:active{background:rgba(0,0,0,.04);}
+.ni svg{width:18px;height:18px;}
+.ni span{font-family:'Inter',sans-serif;font-size:8px;font-weight:500;text-align:center;white-space:nowrap;}
+.ni.active svg{fill:var(--t1);}
+.ni.active span{color:var(--t1);}
+.ni:not(.active) svg{fill:none;stroke:var(--t4);stroke-width:1.5;}
+.ni:not(.active) span{color:var(--t4);}
+.dl-btn{display:flex;align-items:center;gap:8px;width:100%;background:#E7F5E9;color:#1a5a30;border:1px solid #c4e4c8;border-radius:9px;padding:11px 14px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;text-decoration:none;margin-bottom:8px;transition:.15s;}
+.dl-btn:active{filter:brightness(.96);}
+.dl-btn svg{width:15px;height:15px;flex-shrink:0;}
+.dl-btn.blue{background:rgba(36,104,176,.06);border-color:rgba(36,104,176,.2);color:#1448a0;}
+.dl-btn.red{background:rgba(196,48,48,.06);border-color:rgba(196,48,48,.2);color:#8a1010;}
+.dl-btn.yellow{background:rgba(212,160,32,.06);border-color:rgba(212,160,32,.2);color:#8a6508;}
+.cf{background:rgba(255,255,255,.55);border:1px solid var(--bd);border-radius:11px;padding:11px;margin-bottom:11px;}
+.cf select,.cf input{width:100%;background:#fff;border:1px solid var(--bd);border-radius:7px;padding:8px 10px;font-family:'Inter',sans-serif;font-size:12px;color:var(--t1);margin-bottom:7px;outline:none;}
+.fl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);display:block;margin-bottom:3px;}
+.btn{width:100%;background:#E7F5E9;color:#1a5a30;border:1px solid #c4e4c8;border-radius:8px;padding:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.ce{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,.05);}
+.ce:last-child{border-bottom:none;}
+.cdb{background:#E7F5E9;border-radius:7px;padding:5px 8px;text-align:center;flex-shrink:0;min-width:44px;}
+.cday{font-family:'Inter',sans-serif;font-size:17px;font-weight:600;color:var(--g);line-height:1;}
+.cmon{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:#7a9070;}
+.cnl{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;color:var(--t1);}
+.cdt{font-family:'Inter',sans-serif;font-size:11.5px;color:var(--t3);margin-top:1px;}
+.rnb{display:inline-flex;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:7.5px;margin-top:4px;}
+.rnb.ok{background:rgba(18,184,78,.08);color:#0e7038;}
+.rnb.soon{background:rgba(196,48,48,.08);color:#c43030;}
+.rnb.due{background:rgba(196,48,48,.08);color:#7a1010;}
+.thumb-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.thumb-box{background:#f5f5f5;border:1px solid var(--bd);border-radius:9px;padding:10px;text-align:center;}
+.thumb-box svg{margin-bottom:4px;}
+.thumb-lbl{font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t3);}
+.thumb-name{font-family:'Inter',sans-serif;font-size:9px;color:var(--t1);margin-top:2px;}
 </style>
 </head>
 <body>
+<div class="phone">
+<div class="screen">
 
-<div id="app-container">
-  <header>
-    <div class="header-logo">
-      <div class="logo-icon">AOG</div>
-      <div class="header-title">
-        <h1>Akıllı Orman Gözlemcisi</h1>
-        <p>IoT Erken Uyarı &amp; Koruyucu Bariyer Sistemi</p>
+<!-- STATUS BAR -->
+<div class="sb">
+  <span class="sb-t" id="clk">09:41</span>
+  <div style="display:flex;align-items:center;gap:5px;background:#e0f5e8;border:1px solid #b0dfc0;padding:3px 9px;border-radius:14px;">
+    <div class="dot" id="statusDot"></div>
+    <span id="statusText" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--g);">BAĞLANIYOR</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <img class="logo" src="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDE2OTYgNjA4Ij48cGF0aCBmaWxsPSIjQThDODc2IiBkPSJNODk3LjgsMzMuOSBDOTAzLjYsMzAuMSA5MDkuMywyNi4zIDkxNS4yLDIyLjYgQzkzNC4yLDEwLjggOTUwLjQtMy45IDk2MS40LTIzLjcgQzk2Mi4yLTI1LjIgOTYyLjctMjYuOCA5NjMuMS0yOC42IEM5NjMuNy0yOSA5NjQuNS0yOSA5NjUuNi0yOSBDOTY4LjEtMjEuOSA5NzAuMy0xNC44IDk3Mi40LTcuNyBDOTc3LjUsMTAuMSA5ODAsNDguNCA5ODAuOSw2Ni45IEM5ODEuOSw4Ny41IDk4MC40LDEwOCA5NzUuNiwxMjguMiBDOTY4LjksMTU2IDk1My43LDE3OC4yIDkzMS4zLDE5NS42IEM5MDYuMiwyMTQuOSA4NzcuNSwyMjYuMyA4NDcuMSwyMzQgQzgzOS43LDIzNS44IDgzMi4zLDIzNy42IDgyNC44LDIzOS4yIEM4MjIuMSwyMzkuOCA4MTkuNCwyMzkuNyA4MTUuMywyNDAgQzgxNy44LDIzNS44IDgyMS44LDIyNy43IDgyNS4yLDIxNS40IEM4MzQuMiwxOTQgODQ1LjYsMTc0IDg2MC41LDE1Ni4yIEM4NTkuOSwxNTkuNyA4NTksMTYyLjkgODU4LjEsMTY2LjEgQzg1Ny41LDE2Ni4xIDg1NS4yLDE2NS42IDg1NC41LDE2Ni41IEM4NTEuOSwxNjkuOSA4NDkuNSwxNzMuNiA4NDcuNCwxNzcuMyBDODQyLjgsMTg1LjMgODM4LjIsMTkzLjMgODM0LjEsMjAxLjUgQzgzMC40LDIwOC42IDgyNy4yLDIxNiA4MjQsMjIzLjQgQzgyMi4yLDIyNy45IDgyMC43LDIzMi41IDgxOC44LDIzNy44IEM4MjEsMjM3LjggODIyLjYsMjM4LjEgODI0LjEsMjM3LjcgQzgzOC40LDIzNCA4NTMsMjMxIDg2NywyMjYuMyBDODg1LDIyMC4yIDkwMi43LDIxMyA5MTguOSwyMDIuNSBDOTIxLjQsMjAwLjggOTI0LjUsMTk5LjQgOTI0LjIsMTk1LjQgQzkyNC4yLDE5NC43IDkyNS45LDE5MyA5MjYuNCwxOTMuMiBDOTMwLDE5NC42IDkzMS4zLDE5Mi4xIDkzMy41LDE5MCBDOTMyLjIsMTk1LjUgOTMzLjksMTk3LjkgOTM1LjcsMTk3LjkgQzkzOC4xLDE5NC44IDk0My4zLDE5MS44IDk0OCwxODcuNCI+PC9wYXRoPjxwYXRoIGZpbGw9IiNFMTJBMkEiIGQ9Ik00NTIuNywyNjYuMyBDNDc4LjksMzIxLjcgNTA0LjksMzc2LjggNTMxLDQzMS45IEM1NDcsNDY1LjYgNTYzLDQ5OS4zIDU3OSw1MzMgQzU3OS43LDUzNC41IDU4MC4zLDUzNiA1ODEuMyw1MzguMyBDNTc5LjEsNTM4LjUgNTc3LjQsNTM4LjcgNTc1LjcsNTM4LjcgQzU0Ni40LDUzOC43IDUxNy4xLDUzOC43IDQ4Ny43LDUzOC44IEM0ODQuMyw1MzguOCA0ODIuNSw1MzcuOSA0ODEsNTM0LjUgQzQ2Ny43LDUwNC43IDQ1NCw0NzUuMSA0NDAuNyw0NDUuMyBDNDM5LjM0Niw0NDIuMyA0MzcuNDMsNDQxLjcgNDM0LjQ2NSw0NDEuNyBDMzgzLjYsNDQxLjggMzMyLjgsNDQxLjkgMjgxLjk3Myw0NDIgQzI4MC4xNzEsNDQyIDI3OC4zNjksNDQyIDI3NS43OCw0NDIgQzI3Ni41MTUsNDQwIDI3Ni44OTYsNDM4LjYgMjc3LjUxMiw0MzcuMyBDMjg5LjI3Myw0MTMuNCAzMDEuMTYsMzg5LjYgMzEyLjc2MiwzNjUuNiBDMzE0LjUzMiwzNjIgMzE2LjcwNywzNjEuMSAzMjAuNDk4LDM2MS4xIEMzNDYuNSwzNjEuMyAzNzIuNSwzNjEuMiAzOTguNSwzNjEuMiBDMzk5LjYsMzYxLjIgNDAwLjgsMzYxIDQwMy4yLDM2MC43IEMzODAuOCwzMTAuMSAzNTguNywyNjAgMzM2LjEsMjA4LjggQzMzNC44LDIxMC45IDMzMy45LDIxMiAzMzMuNCwyMTMuMyBDMzE1LjksMjUzLjYgMjk4LjMsMjkzLjggMjgwLjksMzM0LjIgQzI2Mi4xLDM3Ny45IDI0My42LDQyMS43IDIyNC45LDQ2NS41IEMyMTQuOSw0ODguOCAyMDQuOCw1MTIgMTk0LjYsNTM1LjEgQzE5Myw1MzYuNyAxOTEuNiw1MzguNSAxOTAuMSw1MzguNSBDMTU5LjksNTM4LjcgMTI5Ljc2LDUzOC43IDk5LjYsNTM4LjggQzk5LDUzOC44IDk4LjMsNTM4LjUgOTcuMSw1MzguMyBDMTAwLjUsNTMwLjYgMTAzLjgsNTIzLjIgMTA3LjIsNTE1LjkgQzEyOS41LDQ2Ni42IDE1MS44LDQxNy4zIDE3NC4yLDM2OCBDMjAyLjYsMzA1LjQgMjMxLjEsMjQyLjggMjU5LjYsMTgwLjIgTDI4OS44LDExMy4zIEMyOTEuMywxMTAgMjkzLjMsMTA5LjUgMjk2LjQsMTA5LjUgTDM3NC40LDEwOS41IEMzNzcuOCwxMDkuNSAzNzkuNCwxMTAuNyAzODAuOCwxMTMuNiBaIj48L3BhdGg+PC9zdmc+" alt="AOG">
+  <div>
+    <div style="font-family:'Inter',sans-serif;font-weight:600;font-size:14px;color:var(--t1);">Akıllı Orman Gözlemcisi</div>
+    <div class="hdr-sub">AOG • TEKNOFEST 2026 • DEFENDERS OF GREEN</div>
+  </div>
+  <div class="badge"><div class="dot"></div><span class="badge-t">Aktif</span></div>
+</div>
+
+<!-- ═══ SAYFA: HARİTA ═══ -->
+<div class="page active" id="page-harita"><div class="cnt">
+  <div class="mcard">
+    <div id="leafletMap"></div>
+    <div class="mlbl">Canlı Konum</div>
+    <div class="mdist"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#12b84e" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><b id="distVal">-- m</b></div>
+  </div>
+  <div class="gps-row">
+    <div class="gc"><div class="gc-l">TELEFON KONUMU</div><div class="gc-v" id="phoneGps">Konum alınıyor...</div></div>
+    <div class="gc"><div class="gc-l">LoRa SENSÖR (TX)</div><div class="gc-v">37.87460, 32.49320</div></div>
+  </div>
+  <div class="sc">
+    <div class="sc-h">
+      <div><div class="sc-tag">MAX6675 TERMOKUPL — AOG-TX</div><div class="sc-id">ESP32-S3 Verici Sensör Düğümü</div></div>
+      <div class="sig"><div class="sig-b"><span></span><span></span><span></span><span></span></div><span class="sig-t">Güçlü</span></div>
+    </div>
+    <div class="tv">
+      <div class="tv-n" id="tempVal">--.-</div>
+      <div class="tv-u">°C</div>
+      <div class="tv-note"><div class="tv-nl">KRİTİK EŞİK</div><div class="tv-nv">60 °C</div></div>
+    </div>
+    <div class="mr">
+      <div class="mc2"><div class="mc2-l">İŞLEMCİ</div><div class="mc2-v" style="font-family:'JetBrains Mono',monospace;font-size:11px;">ESP32-S3</div></div>
+      <div class="mc2"><div class="mc2-l">BATARYA</div><div class="mc2-v">%88</div></div>
+      <div class="mc2"><div class="mc2-l">GÜNCELLENDİ</div><div class="mc2-v" id="updEl">0 sn</div></div>
+    </div>
+  </div>
+  <div class="ca" style="background:#fff;border-color:#e0e8e4;">
+    <div class="lbl">ALARM DURUMU</div>
+    <div class="ar">
+      <div class="ac ok" id="alarmOk"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0e7a38" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Normal<div class="ac-dot"></div></div>
+      <div class="ac cr" id="alarmCr" style="opacity:.4;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7a1a1a" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>Kritik Uyarı</div>
+    </div>
+  </div>
+  <!-- LoRa Sinyal -->
+  <div class="cm">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5a8aaa" stroke-width="2"><path d="M1 6C4 3 8 1.5 12 1.5s8 1.5 11 4.5M4 10c2-2 5-3 8-3s6 1 8 3M7 14c1.3-1.3 3-2 5-2s3.7.7 5 2M12 18v.5"/></svg>
+      <span class="lbl" style="margin-bottom:0;">LoRa SİNYAL — AOG-RX</span>
+      <span id="loraDot" style="display:none;width:5px;height:5px;background:var(--r);border-radius:50%;animation:p 1s infinite;margin-left:auto;"></span>
+    </div>
+    <div class="wb" id="loraWB">
+      <svg id="loraWBico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
+      <div><div id="loraWBt" style="font-family:'Inter',sans-serif;font-size:12px;font-weight:600;"></div><div id="loraWBs" style="font-family:'JetBrains Mono',monospace;font-size:7.5px;margin-top:1px;"></div></div>
+      <div id="loraWBv" style="margin-left:auto;font-family:'Inter',sans-serif;font-size:16px;font-weight:500;"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:11px;margin-bottom:13px;">
+      <svg width="84" height="46" viewBox="0 0 90 50" style="flex-shrink:0;">
+        <defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#c43030"/><stop offset="50%" stop-color="#d4a020"/><stop offset="100%" stop-color="#12b84e"/></linearGradient></defs>
+        <path d="M8,46 A37,37 0 0,1 82,46" fill="none" stroke="rgba(0,0,0,.08)" stroke-width="7" stroke-linecap="round"/>
+        <path id="gArc" d="M8,46 A37,37 0 0,1 82,46" fill="none" stroke="url(#gg)" stroke-width="7" stroke-linecap="round" stroke-dasharray="117" stroke-dashoffset="80"/>
+        <line id="gNeedle" x1="45" y1="46" x2="45" y2="14" stroke="#4a5644" stroke-width="2" stroke-linecap="round" transform="rotate(-45,45,46)"/>
+        <circle cx="45" cy="46" r="3" fill="#E7F5E9" stroke="rgba(0,0,0,.12)" stroke-width="1.5"/>
+      </svg>
+      <div style="flex:1;">
+        <div class="lbl" style="margin-bottom:2px;">RSSI DEĞERİ</div>
+        <div style="display:flex;align-items:baseline;gap:3px;">
+          <span id="loraVal" style="font-family:'Inter',sans-serif;font-size:38px;font-weight:300;line-height:1;color:var(--t1);">--</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);">dBm</span>
+        </div>
+        <div id="loraLbl" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:500;color:var(--t3);margin-top:1px;">Bekleniyor</div>
       </div>
     </div>
-    <div class="system-badges">
-      <div class="status-badge online">
-        <span class="dot"></span>
-        <span>Sistem Aktif</span>
-      </div>
-      <button class="btn btn-outline" id="theme-toggle" onclick="toggleTheme()" style="padding: 6px 12px;">🌓</button>
+    <canvas id="loraCanvas" width="330" height="60" style="width:100%;height:60px;display:block;border-radius:6px;background:rgba(255,255,255,.25);"></canvas>
+    <div style="display:flex;justify-content:space-between;margin-top:4px;">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t3);">-2dk</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t3);">-1dk</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:7.5px;color:var(--t3);">Şimdi</span>
     </div>
-  </header>
-
-  <main>
-    <nav class="sidebar">
-      <div class="nav-item active" onclick="switchTab('harita-tab', this)">🗺️ Coğrafi İzleme</div>
-      <div class="nav-item" onclick="switchTab('telemetri-tab', this)">📊 Sensör Telemetrisi</div>
-      <div class="nav-item" onclick="switchTab('kaplama-tab', this)">🧪 Koruyucu Kaplama</div>
-      <div class="nav-item" onclick="switchTab('log-tab', this)">📜 Sistem Günlükleri</div>
-      <div class="nav-item" onclick="switchTab('donanim-tab', this)">🛠️ Donanım &amp; Galeri</div>
-    </nav>
-
-    <div class="content-viewport">
-      
-      <div id="harita-tab" class="tab-panel active">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">📡 Canlı LoRa Topolojisi &amp; Konum Takibi</h3>
-            <span style="font-size: 0.85rem; color: var(--text-muted);">Mesafe ve Görüş Hattı (LoS) Analizi</span>
-          </div>
-          <div id="map-wrapper"></div>
-          <div style="margin-top: 14px; display: flex; gap: 16px; flex-wrap: wrap;">
-            <div class="status-badge" style="background:#e0f2fe; color:#0369a1;"><strong>RX İstasyonu:</strong> 41.0258° N, 28.9744° E</div>
-            <div class="status-badge" style="background:#fef3c7; color:#b45309;"><strong>TX Verici Düğüm:</strong> 41.0295° N, 28.9810° E</div>
-            <div class="status-badge" style="background:#bbf7d0; color:#15803d;"><strong>RF Mesafe:</strong> ~685 Metre</div>
-          </div>
+  </div>
+  <!-- 1 TX + 1 RX -->
+  <div class="ca" style="background:#fff;border-color:#e0e8e4;">
+    <div class="lbl">AĞ: 1 TX + 1 RX DÜĞÜM</div>
+    <div class="nr">
+      <div class="nd ok"></div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="ni2">AOG-TX</div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:7px;background:#E7F5E9;color:#0e7038;padding:2px 6px;border-radius:4px;">VERİCİ</span>
         </div>
+        <div style="font-family:'Inter',sans-serif;font-size:10px;color:#8a9882;margin-top:1px;">ESP32-S3 + MAX6675 + LoRa TX</div>
       </div>
-
-      <div id="telemetri-tab" class="tab-panel">
-        <div class="grid-container">
-          
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">🌲 Transmitter Düğümü (TX-01)</h3>
-              <span class="status-badge online" style="font-size:0.75rem;">ESP32-S3</span>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">ADXL355 İvmeölçer ve MAX6675 Isılçift Verileri</p>
-            
-            <div class="metric-group">
-              <div class="metric-card">
-                <span class="metric-label">Sıcaklık (MAX6675)</span>
-                <span class="metric-value" id="tx-temp">24.5<span class="metric-unit">°C</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">Eğim Açısı</span>
-                <span class="metric-value" id="tx-tilt">1.2<span class="metric-unit">°</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">X Eksen İvme</span>
-                <span class="metric-value" id="tx-acc-x">0.02<span class="metric-unit">g</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">Y Eksen İvme</span>
-                <span class="metric-value" id="tx-acc-y">-0.01<span class="metric-unit">g</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">Z Eksen İvme</span>
-                <span class="metric-value" id="tx-acc-z">0.99<span class="metric-unit">g</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">Pil Gerilimi</span>
-                <span class="metric-value" id="tx-bat">3.92<span class="metric-unit">V</span></span>
-              </div>
-            </div>
-            
-            <h4 style="margin-top:16px; font-size:0.9rem;">ADXL355 Canlı Titreşim Grafiği</h4>
-            <canvas id="accel-chart" class="chart-canvas"></canvas>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">🎛️ Gateway Alıcı İstasyon (RX-Merkez)</h3>
-              <span class="status-badge online" style="font-size:0.75rem; background:#fae8ff; color:#a21caf;">ESP32-P4</span>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">LoRa RF Link Sinyal Kalitesi &amp; Ağ Sağlığı</p>
-            
-            <div class="metric-group">
-              <div class="metric-card">
-                <span class="metric-label">LoRa RSSI</span>
-                <span class="metric-value" id="rx-rssi">-68<span class="metric-unit">dBm</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">LoRa SNR</span>
-                <span class="metric-value" id="rx-snr">9.5<span class="metric-unit">dB</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">Paket Hata Oranı (PER)</span>
-                <span class="metric-value" id="rx-per">0.2<span class="metric-unit">%</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">Alınan Toplam Paket</span>
-                <span class="metric-value" id="rx-packets">1428</span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">İşlemci Yükü (Çift Çekirdek)</span>
-                <span class="metric-value">14<span class="metric-unit">%</span></span>
-              </div>
-              <div class="metric-card">
-                <span class="metric-label">Çalışma Süresi (Uptime)</span>
-                <span class="metric-value" style="font-size:1.15rem;" id="rx-uptime">02:44:12</span>
-              </div>
-            </div>
-            
-            <h4 style="margin-top:16px; font-size:0.9rem;">RF Sinyal Trendi (RSSI)</h4>
-            <canvas id="rssi-chart" class="chart-canvas"></canvas>
-          </div>
-
-        </div>
-      </div>
-
-      <div id="kaplama-tab" class="tab-panel">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">🧪 Doğal Bazlı Koruyucu Kaplama Termal Analiz Sonuçları</h3>
-            <span style="font-size:0.85rem; font-weight:600; color:var(--brand-dark);">Yıldız Teknik Üniversitesi Merkez Lab. Raporu</span>
-          </div>
-          <p style="font-size:0.9rem; color:var(--text-muted);">
-            Projemizde ağaçları ve sensör kutularımızı dış yangın risklerine karşı izole etmek amacıyla geliştirdiğimiz <strong>Aloe vera jeli, çam (pinha) kabuğu tozu, yumurta kabuğu tozu ve ksantan gam</strong> içerikli biopolimer bariyer kaplamanın TGA-DSC ve FTIR test verileri aşağıda entegre edilmiştir.
-          </p>
-
-          <div class="table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>Numune Tipi &amp; Açıklaması</th>
-                  <th>Toplam Kütle Kaybı (25-600°C)</th>
-                  <th>600°C'de Kalan Kalıntı (Char)</th>
-                  <th>Ana DTG Pik Sıcaklığı</th>
-                  <th>Maksimum Bozunma Hızı (DTG Şiddeti)</th>
-                  <th>Yarı Bozunma Sıcaklığı (T₅₀)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Numune A:</strong> Karışımın Kendisi (Kuru Toz)</td>
-                  <td>%3.27</td>
-                  <td>%96.71</td>
-                  <td>429.9°C</td>
-                  <td>-0.17 %/dk</td>
-                  <td>Ulaşılamadı (&gt;600°C)</td>
-                </tr>
-                <tr>
-                  <td><strong>Numune B:</strong> Kontrol Ahşap (Kaplamasız)</td>
-                  <td>%83.34</td>
-                  <td>%16.66</td>
-                  <td>399.2°C</td>
-                  <td>-20.28 %/dk</td>
-                  <td>396.8°C</td>
-                </tr>
-                <tr>
-                  <td><strong>Numune C:</strong> Taze Kaplanmış Ahşap (~6 Günlük)</td>
-                  <td>%78.90</td>
-                  <td>%21.05</td>
-                  <td>424.2°C</td>
-                  <td>-6.81 %/dk</td>
-                  <td>392.3°C</td>
-                </tr>
-                <tr>
-                  <td><strong>Numune D:</strong> Yaşlandırılmış Kaplanmış Ahşap (~3.5 Aylık)</td>
-                  <td>%81.29</td>
-                  <td>%18.71</td>
-                  <td>437.9°C</td>
-                  <td>-8.93 %/dk</td>
-                  <td>411.9°C</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div style="background-color: var(--bg-primary); padding: 16px; border-radius: var(--radius-md); margin-top: 20px; border-left: 4px solid var(--brand-color);">
-            <h4 style="font-size:0.95rem; margin-bottom:6px;">🔬 Çapraz Analiz Bulguları ve Bilimsel Çıkarım:</h4>
-            <ul style="font-size:0.875rem; padding-left:20px; display:flex; flex-direction:column; gap:6px; color:var(--text-main);">
-              <li><strong>Termal Bariyer Etkisi:</strong> Kaplama uygulanmış taze ahşapta (Numune C), kaplamasız oduna (Numune B) kıyasla ana yanma pik sıcaklığı <strong>399.2°C'den 424.2°C'ye (+25°C)</strong> yükselmiştir.</li>
-              <li><strong>Kinetik Geciktirme:</strong> Kontrol ahşabın maksimum kütle kaybı hızı <strong>-20.28 %/dk</strong> iken kaplama ile bu değer 3 kat azalarak <strong>-6.81 %/dk</strong> seviyesine indirilmiş, ani tutuşma engellenmiştir.</li>
-              <li><strong>Kimyasal İmzalar (FTIR Maskeleme):</strong> FTIR spektrumlarında, kaplamasız ahşapta 1026 cm⁻¹ konumunda görülen keskin selüloz C-O gerilme bandı, taze kaplamada (C) tamamen maskelenmiştir. 3.5 ay dış ortamda yaşlandırılan numunede (D) ise bu bant 1017 cm⁻¹ konumunda tekrar belirerek kaplamanın zamanla mikron düzeyinde inceldiğini kanıtlamaktadır.</li>
-              <li><strong>Karbonat Katkısı:</strong> Karışımın kendisinde (A) 600°C'de %96.71 gibi devasa bir kalıntı kalmasının nedeni yumurta kabuğundan gelen kalsiyum karbonattır (CaCO₃). FTIR'daki 667 cm⁻¹ CO₃²⁻ bükülme bandı bunu desteklemektedir.</li>
-            </ul>
-          </div>
-
-          <div style="margin-top: 20px; text-align: center;">
-            <a href="Analiz.pdf" class="btn btn-primary" download="AOG_Detayli_Laboratuvar_Analiz_Raporu.pdf">
-              📥 YTÜ Analiz Raporunu İndir (Analiz.pdf)
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div id="log-tab" class="tab-panel">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">📜 Canlı LoRa Telemetri Terminali &amp; Paket Kod Çözücü</h3>
-            <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="clearLogs()">Temizle</button>
-          </div>
-          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Düğümlerden gelen ham ikili (binary) LoRa paket paket yapılarının hex dökümü çözümlenmektedir.</p>
-          <div class="terminal-box" id="terminal">
-            <div class="terminal-line"><span class="terminal-time">[15:35:01]</span> [SİSTEM] AOG Gateway Alıcı İstasyon başlatıldı. ESP32-P4 radyo dinleme modunda.</div>
-            <div class="terminal-line"><span class="terminal-time">[15:35:03]</span> [LoRa] Frekans bandı ayarlandı: 868.1 MHz, SF7, BW 125kHz, CR 4/5.</div>
-          </div>
-        </div>
-      </div>
-
-      <div id="donanim-tab" class="tab-panel">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">🛠️ Proje Donanım Parçaları &amp; Teknik Görseller Galetisi</h3>
-            <span style="font-size:0.85rem; color:var(--text-muted);">Sistem Tasarımına Ait Orijinal Dosyalar</span>
-          </div>
-          <p style="font-size:0.9rem; color:var(--text-muted);">
-            Aşağıda, Akıllı Orman Gözlemcisi (AOG) projesinde kullanılan özel üretim çok katmanlı baskı devre kartları (PCB), test ortamları ve donanım bileşenlerine ait yüksek çözünürlüklü görseller listelenmiştir. Üzerlerine tıklayarak orijinal dosyaları doğrudan indirebilirsiniz.
-          </p>
-
-          <div class="gallery-grid">
-            <script>
-              const images = [
-                { id: "WhatsApp Image 2026-06-27 at 21.49.54 (1).jpeg-8c932c4e-e5f0-40b2-a0de-563e096457ab", name: "PCB Alt Katman Yollar ve Şeması" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.54 (2).jpeg-de50f966-260c-41cc-9db7-a34a3d7bea86", name: "ADXL355 Entegrasyon Devresi" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.54 (3).jpeg-8cd4800c-592d-46a9-8554-ccb337b64ee3", name: "LoRa Anten Eşleme Devresi Tasarımı" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.54 (4).jpeg-89e2bb7a-e671-49d2-8f40-34fbbefd7ef4", name: "Buck Dönüştürücü Güç Katı Bloğu" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.54 (5).jpeg-9b378f42-9879-42ae-9040-8cbe7b704232", name: "ESP32-S3 Merkezi MCU Yerleşimi" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.54 (6).jpeg-42752bd4-665d-4715-acbd-df58a0714349", name: "Laboratuvar Test Düzeneği Fotoğrafı" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.54 (7).jpeg-52710bc2-264a-468c-8bb2-6a6207526fb2", name: "Koruyucu Kaplama Kaplı Ahşap Numunesi" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.54.jpeg-8916c72b-7d20-447a-b3f0-6771334f131b", name: "Genel Sistem Donanım Yerleşimi" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.55 (1).jpeg-9c0b4da3-19db-46e0-93ec-670115ade4f1", name: "3D Kasa ve Mekanik Sızdırmazlık Görseli" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.55 (2).jpeg-3b8d21eb-47c9-470f-a387-3e74257bd600", name: "MAX6675 Güç Sinyali Filtreleme Hattı" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.55 (3).jpeg-ad0b1d6e-e598-4ac2-a8c3-1a27be920b8d", name: "Güneş Paneli Şarj Kontrol Devresi" },
-                { id: "WhatsApp Image 2026-06-27 at 21.49.55.jpeg-6608bc66-fb42-45a8-8d31-46e0f7b298dd", name: "Hazır Montajlı PCBA Kart Üstten Görünüm" }
-              ];
-              
-              images.forEach(img => {
-                document.write(`
-                  <div class="gallery-item">
-                    <div class="gallery-icon">🖼️</div>
-                    <div class="gallery-title" title="${img.name}">${img.name}</div>
-                    <a href="${img.id}" download="${img.name}.jpeg" class="btn btn-outline" style="padding: 6px 12px; font-size: 0.75rem; width: 100%;">💾 Dosyayı İndir</a>
-                  </div>
-                `);
-              });
-            </script>
-          </div>
-        </div>
-      </div>
-
+      <div class="nt" id="txTempVal" style="font-size:12px;">--°C</div>
+      <div class="nb-w"><div class="nb ok" id="txTempBar" style="width:0%"></div></div>
+      <div class="ns ok" id="txStatus">Aktif</div>
     </div>
-  </main>
+    <div class="nr" style="border-bottom:none;">
+      <div class="nd ok"></div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="ni2">AOG-RX</div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:7px;background:rgba(36,104,176,.08);color:#2468b0;padding:2px 6px;border-radius:4px;border:1px solid rgba(36,104,176,.15);">ALICI</span>
+        </div>
+        <div style="font-family:'Inter',sans-serif;font-size:10px;color:#8a9882;margin-top:1px;">ESP32 + LoRa RX + Firebase WiFi</div>
+      </div>
+      <div class="nt" style="color:#2468b0;font-size:12px;" id="rxRssi">-- dBm</div>
+      <div class="nb-w"><div class="nb ok" id="rxRssiBar" style="width:60%;background:#2468b0;"></div></div>
+      <div class="ns ok" id="rxStatus">Online</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- ═══ SAYFA: ZIRH ═══ -->
+<div class="page" id="page-zirh"><div class="cnt">
+  <div class="ph"><div class="ph-t">Biyolojik Koruma Kalkanı</div><div class="ph-s">Aloe Vera & Silika Tabanlı Yangın Geciktirici Kaplama</div></div>
+  <div class="ca" style="background:#fff;">
+    <div class="lbl">LAB KARAKTERİZASYON — TGA / DSC</div>
+    <div style="display:flex;justify-content:space-between;font-size:11px;font-family:'JetBrains Mono',monospace;"><span>TGA Kütle Korunumu</span><span style="color:var(--g);font-weight:600;">%84.2</span></div>
+    <div class="lab-bar-w"><div class="lab-bar" style="width:84.2%;"></div></div>
+    <p style="font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:13px;">Yüksek sıcaklıkta Aloe vera içindeki su buharlaşarak endotermik ısı emilimi sağlar; pirinç ve yumurta kabuğu külleri birleşerek oksijen akışını kesen seramik bariyer zırhı (Char Layer) üretir.</p>
+    <div style="display:flex;justify-content:space-between;font-size:11px;font-family:'JetBrains Mono',monospace;"><span>DSC Termal Koruma Sınırı</span><span style="color:var(--b);font-weight:600;">Kritik Eşik Güvende</span></div>
+    <div class="lab-bar-w"><div class="lab-bar" style="width:100%;background:var(--b);"></div></div>
+    <p style="font-size:11px;color:var(--t2);line-height:1.5;">Kaplamanın endotermik reaksiyon kapasitesi, alev ısısını içeride hapsederek gömülü elektroniğin (ESP32-S3) kritik dakikalar boyunca veri aktarımına devam etmesini garantiler.</p>
+  </div>
+  <div class="ca" style="border-left:3px solid var(--o);background:#fff;">
+    <div class="lbl" style="color:var(--o);">KAPLAMA KAYIT DEFTERİ</div>
+    <div class="cf">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+        <div><label class="fl">DÜĞÜM</label><select id="coatNode"><option>AOG-TX</option><option>AOG-RX</option></select></div>
+        <div><label class="fl">TARİH</label><input type="date" id="coatDate"></div>
+      </div>
+      <label class="fl">KAPLAMA FORMÜLÜ</label>
+      <select id="coatFormula"><option>Standart Mix (Aloe+PK+YK)</option><option>Yoğun Mix (2x Aloe Vera)</option><option>Hafif Mix (1x Pirinç Kabuğu)</option><option>Özel Karışım</option></select>
+      <label class="fl">NOT</label>
+      <input type="text" id="coatNote" placeholder="İsteğe bağlı not...">
+      <button class="btn" onclick="addCoating()">Kaydet</button>
+    </div>
+    <div class="lbl">GEÇMİŞ KAYITLAR</div>
+    <div id="coatingList"></div>
+    <div id="noCoating" style="text-align:center;padding:13px;font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--t4);">Henüz kayıt yok</div>
+  </div>
+</div></div>
+<!-- ═══ SAYFA: YTÜ ANALİZ ═══ -->
+<div class="page" id="page-analiz"><div class="cnt">
+  <div class="ph"><div class="ph-t">YTÜ Resmi Analiz Raporu</div><div class="ph-s">TGA-DSC ve FTIR-ATR Spektroskopisi • 24-25 Haziran 2026</div></div>
+  <div class="ca" style="background:#fff;">
+    <div class="lbl">CİHAZ VE METOT</div>
+    <div style="font-size:11px;line-height:1.7;color:var(--t2);font-family:'JetBrains Mono',monospace;">
+      • <b>Laboratuvar:</b> Yıldız Teknik Üniversitesi Merkez Lab.<br>
+      • <b>Cihazlar:</b> NETZSCH STA 449F3 / PerkinElmer Spectrum IR<br>
+      • <b>Koşullar:</b> 25°C → 600°C · 10.0 L/dk · Sentetik Hava
+    </div>
+  </div>
+  <div class="ca" style="background:#fff;">
+    <div class="lbl">HAM EXCEL VERİ SETLERİ</div>
+    <a class="dl-btn blue" href="https://docs.google.com/spreadsheets/d/1Zowln2LvoQSLpxY8v1I17Baav20Z12Zh/edit?usp=sharing&rtpof=true" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Numune A — Karışım.xlsx
+    </a>
+    <a class="dl-btn red" href="https://docs.google.com/spreadsheets/d/1X8YwHzDKuOG0zZ6u-KsNLaziuiGDB5_d/edit?usp=sharing&rtpof=true" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Numune B — Kontrol Ahşap.xlsx
+    </a>
+    <a class="dl-btn" href="https://docs.google.com/spreadsheets/d/1Y2BV3aYCpQXo0cQI-vB22moXKPAucnpw/edit?usp=sharing&rtpof=true" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Numune C — Taze Kaplama.xlsx
+    </a>
+    <a class="dl-btn yellow" href="https://docs.google.com/spreadsheets/d/1Zowln2LvoQSLpxY8v1I17Baav20Z12Zh/edit?usp=sharing&rtpof=true" target="_blank" style="margin-bottom:0;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Numune D — Yaşlandırılmış.xlsx
+    </a>
+  </div>
+  <div class="lbl" style="padding:0 0 5px;">NUMUNE BAZLI KARAKTERİZASYON</div>
+  <div class="ca" style="border-left:4px solid var(--b);">
+    <div style="display:flex;align-items:center;margin-bottom:5px;"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--b);">A — Karışımın Kendisi</span><span style="font-family:'JetBrains Mono',monospace;font-size:7.5px;background:rgba(36,104,176,.1);color:var(--b);padding:2px 5px;border-radius:4px;margin-left:auto;">İnorganik Matris</span></div>
+    <p style="font-size:11px;color:var(--t2);line-height:1.4;">600°C sonunda <b>%96.71 kalan kütle</b> · toplam kayıp %3.27 · FTIR 667.20 cm⁻¹ karbonat bandı CaCO₃ + SiO₂ seramik bariyeri doğrulamaktadır.</p>
+  </div>
+  <div class="ca" style="border-left:4px solid var(--r);">
+    <div style="display:flex;align-items:center;margin-bottom:5px;"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--r);">B — Kontrol Ahşap (Kaplamasız)</span><span style="font-family:'JetBrains Mono',monospace;font-size:7.5px;background:rgba(196,48,48,.1);color:var(--r);padding:2px 5px;border-radius:4px;margin-left:auto;">Yüksek Risk</span></div>
+    <p style="font-size:11px;color:var(--t2);line-height:1.4;">399.2°C'de <b>−20.28 %/dk</b> bozunma piki · DSC 32 mW/mg sivri ekzotermik tepe · ani tutuşma kanıtlandı · kalan kütle %16.66.</p>
+  </div>
+  <div class="ca" style="border-left:4px solid var(--g);">
+    <div style="display:flex;align-items:center;margin-bottom:5px;"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--g);">C — Taze Kaplanmış Ahşap</span><span style="font-family:'JetBrains Mono',monospace;font-size:7.5px;background:rgba(18,184,78,.1);color:var(--g);padding:2px 5px;border-radius:4px;margin-left:auto;">Taze Bariyer</span></div>
+    <p style="font-size:11px;color:var(--t2);line-height:1.4;">Bozunma hızı <b>−6.81 %/dk</b>'ya düştü · pik sıcaklığı <b>+25°C gecikerek</b> 424.2°C'ye kaydı · kalan kütle %21.05.</p>
+  </div>
+  <div class="ca" style="border-left:4px solid var(--o);">
+    <div style="display:flex;align-items:center;margin-bottom:5px;"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;color:var(--o);">D — Yaşlandırılmış (99 Gün)</span><span style="font-family:'JetBrains Mono',monospace;font-size:7.5px;background:rgba(212,160,32,.1);color:var(--o);padding:2px 5px;border-radius:4px;margin-left:auto;">Sürdürülebilir</span></div>
+    <p style="font-size:11px;color:var(--t2);line-height:1.4;">T₅₀ = <b>411.9°C</b> — serideki en yüksek mukavemet · bozunma hızı −8.93 %/dk · kalan kütle %18.71.</p>
+  </div>
+</div></div>
+
+<!-- ═══ SAYFA: BELGELER ═══ -->
+<div class="page" id="page-belgeler"><div class="cnt">
+  <div class="ph"><div class="ph-t">Proje Belgeleri</div><div class="ph-s">PDF rapor, Excel veri setleri ve görseller</div></div>
+
+  <!-- PDF Raporu -->
+  <div class="ca" style="background:#fff;">
+    <div class="lbl">YTÜ RESMİ ANALİZ RAPORU — PDF</div>
+    <a class="dl-btn red" href="https://drive.google.com/file/d/1ihu9W0pE469tRN8RbS7c0BZNiouRVI1-/view?usp=sharing" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      YTÜ_TGA_DSC_FTIR_Raporu.pdf — Görüntüle / İndir
+    </a>
+    <p style="font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace;">YTÜ Merkez Lab · NETZSCH STA 449F3 · PerkinElmer Spectrum IR · 24-25 Haziran 2026</p>
+  </div>
+
+  <!-- Ham Excel -->
+  <div class="ca" style="background:#fff;">
+    <div class="lbl">HAM EXCEL VERİ SETLERİ</div>
+    <a class="dl-btn blue" href="https://docs.google.com/spreadsheets/d/1Zowln2LvoQSLpxY8v1I17Baav20Z12Zh/edit?usp=sharing&rtpof=true&sd=true" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ExpAll_Numune_A_Karışım.xlsx
+    </a>
+    <a class="dl-btn red" href="https://docs.google.com/spreadsheets/d/1X8YwHzDKuOG0zZ6u-KsNLaziuiGDB5_d/edit?usp=sharing&rtpof=true&sd=true" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ExpAll_Numune_B_Kontrol_Ahşap.xlsx
+    </a>
+    <a class="dl-btn" href="https://docs.google.com/spreadsheets/d/1Y2BV3aYCpQXo0cQI-vB22moXKPAucnpw/edit?usp=sharing&rtpof=true&sd=true" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ExpAll_Numune_C_Taze_Kaplama.xlsx
+    </a>
+    <a class="dl-btn yellow" href="https://docs.google.com/spreadsheets/d/1Zowln2LvoQSLpxY8v1I17Baav20Z12Zh/edit?usp=sharing&rtpof=true&sd=true" target="_blank" style="margin-bottom:0;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>ExpAll_Numune_D_Yaşlandırılmış.xlsx
+    </a>
+  </div>
+
+  <!-- Görseller -->
+  <div class="ca" style="background:#fff;">
+    <div class="lbl">PROJE GÖRSELLERİ</div>
+    <a class="dl-btn" href="https://drive.google.com/drive/folders/1ihu9W0pE469tRN8RbS7c0BZNiouRVI1-" target="_blank">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+      Tüm Görselleri Aç — Google Drive
+    </a>
+    <div class="thumb-grid">
+      <div class="thumb-box" style="background:linear-gradient(135deg,#e7f5e9,#f0f8f2);border-color:#c4e4c8;">
+        <svg width="40" height="36" viewBox="0 0 100 80">
+          <polyline points="5,75 20,60 35,45 45,30 60,50 80,20 95,35" fill="none" stroke="#12b84e" stroke-width="3" stroke-linecap="round"/>
+          <line x1="5" y1="75" x2="95" y2="75" stroke="#cdd5c5" stroke-width="1.5"/>
+          <line x1="5" y1="5" x2="5" y2="75" stroke="#cdd5c5" stroke-width="1.5"/>
+        </svg>
+        <div class="thumb-lbl">TGA Kütle Kaybı</div>
+        <div class="thumb-name">Tüm Numuneler</div>
+      </div>
+      <div class="thumb-box" style="background:linear-gradient(135deg,#eef3fb,#f4f7fc);border-color:#c0d4f0;">
+        <svg width="40" height="36" viewBox="0 0 100 80">
+          <polyline points="5,50 25,48 40,45 55,20 65,40 80,52 95,55" fill="none" stroke="#2468b0" stroke-width="3" stroke-linecap="round"/>
+          <line x1="5" y1="75" x2="95" y2="75" stroke="#cdd5c5" stroke-width="1.5"/>
+          <line x1="5" y1="5" x2="5" y2="75" stroke="#cdd5c5" stroke-width="1.5"/>
+        </svg>
+        <div class="thumb-lbl">DSC Isı Akışı</div>
+        <div class="thumb-name">Ekzo / Endo</div>
+      </div>
+      <div class="thumb-box" style="background:linear-gradient(135deg,#fff0f0,#fff6f6);border-color:#f0c4c4;">
+        <svg width="40" height="36" viewBox="0 0 100 80">
+          <polyline points="5,60 15,55 25,30 30,25 40,50 55,55 70,52 85,48 95,50" fill="none" stroke="#c43030" stroke-width="3" stroke-linecap="round"/>
+          <line x1="5" y1="75" x2="95" y2="75" stroke="#cdd5c5" stroke-width="1.5"/>
+          <line x1="5" y1="5" x2="5" y2="75" stroke="#cdd5c5" stroke-width="1.5"/>
+        </svg>
+        <div class="thumb-lbl">FTIR-ATR</div>
+        <div class="thumb-name">Fonksiyonel Gruplar</div>
+      </div>
+      <div class="thumb-box" style="background:linear-gradient(135deg,#f5f3e8,#faf8ef);border-color:#e4ddb0;">
+        <svg width="40" height="36" viewBox="0 0 100 80">
+          <rect x="10" y="40" width="14" height="35" fill="#12b84e" opacity=".7" rx="2"/>
+          <rect x="30" y="18" width="14" height="57" fill="#c43030" opacity=".7" rx="2"/>
+          <rect x="50" y="28" width="14" height="47" fill="#2468b0" opacity=".7" rx="2"/>
+          <rect x="70" y="33" width="14" height="42" fill="#d4a020" opacity=".7" rx="2"/>
+          <line x1="5" y1="75" x2="95" y2="75" stroke="#cdd5c5" stroke-width="1.5"/>
+        </svg>
+        <div class="thumb-lbl">Karşılaştırmalı</div>
+        <div class="thumb-name">A / B / C / D</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Donanım Bilgisi -->
+  <div class="ca" style="background:#fff;">
+    <div class="lbl">DONANIM BİLGİSİ — 1 TX + 1 RX</div>
+    <div class="dr"><span class="dl">MİKRODENETLEYİCİ TX</span><span class="dv">ESP32-S3 (LX7)</span></div>
+    <div class="dr"><span class="dl">MİKRODENETLEYİCİ RX</span><span class="dv">ESP32 (WiFi)</span></div>
+    <div class="dr"><span class="dl">SENSÖR</span><span class="dv">MAX6675 Termokupl</span></div>
+    <div class="dr"><span class="dl">PROTOKOL</span><span class="dv">Ra-02 LoRa 433 MHz</span></div>
+    <div class="dr"><span class="dl">BULUT</span><span class="dv">Firebase Realtime DB</span></div>
+    <div class="dr"><span class="dl">MENZIL</span><span class="dv">1 – 5 km</span></div>
+    <div class="dr"><span class="dl">GÜÇ</span><span class="dv">Powerbank (~6 ay)</span></div>
+    <div class="dr"><span class="dl">KAPLAMA YENİLEME</span><span class="dv" style="color:var(--o);">Her 7 gün</span></div>
+  </div>
+</div></div>
+
+<!-- ═══ SAYFA: AYARLAR ═══ -->
+<div class="page" id="page-ayarlar"><div class="cnt">
+  <div class="ph"><div class="ph-t">Ayarlar</div><div class="ph-s">Sistem yapılandırması</div></div>
+  <div class="ca">
+    <div class="lbl">BİLDİRİMLER</div>
+    <div class="setr"><div><div class="setl">Yangın Uyarısı</div><div class="sets">Kritik sıcaklık bildirimi</div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="setr"><div><div class="setl">LoRa Sinyal Uyarısı</div><div class="sets">Zayıf sinyal bildirimi</div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="setr"><div><div class="setl">Kaplama Hatırlatıcı</div><div class="sets">7 günlük yenileme</div></div><div class="tgl on" onclick="this.classList.toggle('on')"></div></div>
+    <div class="setr"><div><div class="setl">Batarya Uyarısı</div><div class="sets">%20 altı bildirim</div></div><div class="tgl" onclick="this.classList.toggle('on')"></div></div>
+  </div>
+  <div class="ca">
+    <div class="lbl">ALARM EŞİKLERİ</div>
+    <div class="dr"><span class="dl">SICAKLIK UYARI</span><div style="display:flex;align-items:center;gap:4px;"><input id="th1" type="number" value="45" style="width:52px;background:transparent;border:1px solid var(--bd);border-radius:5px;padding:3px 6px;font-family:Inter,sans-serif;font-size:13px;font-weight:500;color:var(--o);text-align:center;outline:none;"><span style="font-size:12px;color:var(--o);">°C</span></div></div>
+    <div class="dr"><span class="dl">SICAKLIK KRİTİK</span><div style="display:flex;align-items:center;gap:4px;"><input id="th2" type="number" value="60" style="width:52px;background:transparent;border:1px solid var(--bd);border-radius:5px;padding:3px 6px;font-family:Inter,sans-serif;font-size:13px;font-weight:500;color:var(--r);text-align:center;outline:none;"><span style="font-size:12px;color:var(--r);">°C</span></div></div>
+    <div class="dr"><span class="dl">LoRa UYARI</span><div style="display:flex;align-items:center;gap:4px;"><input id="th3" type="number" value="-75" style="width:56px;background:transparent;border:1px solid var(--bd);border-radius:5px;padding:3px 6px;font-family:Inter,sans-serif;font-size:13px;font-weight:500;color:var(--o);text-align:center;outline:none;"><span style="font-size:12px;color:var(--o);">dBm</span></div></div>
+    <div class="dr"><span class="dl">LoRa KRİTİK</span><div style="display:flex;align-items:center;gap:4px;"><input id="th4" type="number" value="-85" style="width:56px;background:transparent;border:1px solid var(--bd);border-radius:5px;padding:3px 6px;font-family:Inter,sans-serif;font-size:13px;font-weight:500;color:var(--r);text-align:center;outline:none;"><span style="font-size:12px;color:var(--r);">dBm</span></div></div>
+  </div>
+  <div class="ca">
+    <div class="lbl">SİSTEM</div>
+    <div class="dr"><span class="dl">Güncelleme Aralığı</span><span class="dv">5 sn (Firebase)</span></div>
+    <div class="dr"><span class="dl">LoRa Frekansı</span><span class="dv">433 MHz</span></div>
+    <div class="dr"><span class="dl">Sıcaklık Birimi</span><span class="dv">Celsius</span></div>
+    <div class="dr"><span class="dl">Mimari</span><span class="dv">1 TX · 1 RX</span></div>
+    <div class="dr"><span class="dl">Firmware</span><span class="dv">v1.2.4</span></div>
+  </div>
+  <div class="ca">
+    <div class="lbl">PROJE</div>
+    <div class="dr"><span class="dl">ADI</span><span class="dv">AOG v1.0.0</span></div>
+    <div class="dr"><span class="dl">HEDEF</span><span class="dv">TEKNOFEST 2026</span></div>
+    <div class="dr"><span class="dl">EKİP</span><span class="dv">Defenders of Green</span></div>
+    <div class="dr"><span class="dl">LAB</span><span class="dv">YTÜ Merkez Laboratuvar</span></div>
+  </div>
+</div></div>
+
+</div><!-- /screen -->
+  <!-- BOTTOM NAV -->
+<div class="bnav">
+  <div class="ni active" onclick="switchPage('harita',this)">
+    <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1H5a1 1 0 01-1-1V10.5z"/></svg>
+    <span>Harita</span>
+  </div>
+  <div class="ni" onclick="switchPage('zirh',this)">
+    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <span>Zırh</span>
+  </div>
+  <div class="ni" onclick="switchPage('analiz',this)">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <span>YTÜ</span>
+  </div>
+  <div class="ni" onclick="switchPage('belgeler',this)">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <span>Belgeler</span>
+  </div>
+  <div class="ni" onclick="switchPage('ayarlar',this)">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    <span>Ayarlar</span>
+  </div>
+</div>
 </div>
 
 <script>
-  // Global App State Management
-  let activeTab = 'harita-tab';
-  let map, txMarker, rxMarker, rfPolyline;
-  
-  // Real-time Simulation History Arrays for Custom Canvas Charts
-  let accelData = Array(30).fill(0).map(() => (Math.random() * 0.04 + 0.98));
-  let rssiData = Array(30).fill(-68);
-  let packetCounter = 1428;
-  let systemUptimeSeconds = 9852;
+// ── Sayfa geçişi ──────────────────────────────────────────────────────────
+function switchPage(n,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('page-'+n).classList.add('active');
+  document.querySelectorAll('.ni').forEach(function(x){x.classList.remove('active');});
+  el.classList.add('active');
+  document.querySelector('.screen').scrollTop=0;
+  if(n==='harita'&&typeof leafMap!=='undefined')setTimeout(function(){leafMap.invalidateSize();},150);
+}
 
-  // Custom Chart Drawer Engine (Native HTML5 Canvas implementation)
-  function drawCanvasCharts() {
-    const isDark = document.body.parentElement.getAttribute('data-theme') === 'dark';
-    const gridColor = isDark ? '#334155' : '#e2e8f0';
-    const textColor = isDark ? '#94a3b8' : '#64748b';
+// ── Saat ──────────────────────────────────────────────────────────────────
+function upClock(){var d=new Date();document.getElementById('clk').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+upClock();setInterval(upClock,10000);
 
-    // 1. Accelerometer Chart
-    const accCanvas = document.getElementById('accel-chart');
-    if (accCanvas) {
-      const ctx = accCanvas.getContext('2d');
-      const w = accCanvas.clientWidth;
-      const h = accCanvas.clientHeight;
-      accCanvas.width = w; accCanvas.height = h;
-      
-      ctx.clearRect(0, 0, w, h);
-      // Draw Grid
-      ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
-      for(let i=0; i<w; i+=w/6) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
-      for(let i=0; i<h; i+=h/4) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+// ── Güncelleme sayacı ─────────────────────────────────────────────────────
+var upd=0;
+setInterval(function(){upd=(upd+1)%300;document.getElementById('updEl').textContent=upd+' sn';},1000);
 
-      // Draw Data Line
-      ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath();
-      for(let i=0; i<accelData.length; i++) {
-        const x = (i / (accelData.length - 1)) * w;
-        // Map 0.8g - 1.2g to height
-        const val = accelData[i];
-        const y = h - ((val - 0.8) / 0.4) * h;
-        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+// ── LoRa Canvas ───────────────────────────────────────────────────────────
+var LC=-75,LX=-85,HL=60,lH=[],lC=null;
+var cvs=document.getElementById('loraCanvas'),cx2=cvs.getContext('2d');
+function rq(r){return Math.max(0,Math.min(100,((r+95)/55)*100));}
+function rc(r){return r>=-60?'#12b84e':r>=-75?'#d4a020':'#c43030';}
+function hr(h){return{r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)};}
+function ug(r){var p=rq(r)/100;document.getElementById('gArc').setAttribute('stroke-dashoffset',(117-p*117).toFixed(1));document.getElementById('gNeedle').setAttribute('transform','rotate('+(-90+p*180)+',45,46)');}
+function uw(r){
+  var b=document.getElementById('loraWB'),dot=document.getElementById('loraDot'),lbl=document.getElementById('loraLbl');
+  var t=document.getElementById('loraWBt'),s=document.getElementById('loraWBs'),v=document.getElementById('loraWBv'),ic=document.getElementById('loraWBico');
+  document.getElementById('rxRssi').textContent=r+' dBm'; v.textContent=r+' dBm';
+  if(r<=LX){b.className='wb crit show';dot.style.display='block';t.style.color='#c43030';t.textContent='Sinyal Kritik';s.style.color='#a04040';s.textContent='Bağlantı kesilebilir';v.style.color='#c43030';ic.style.stroke='#c43030';lbl.style.color='#c43030';lbl.textContent='Kritik';}
+  else if(r<=LC){b.className='wb weak show';dot.style.display='block';t.style.color='#d4a020';t.textContent='Sinyal Zayıf';s.style.color='#886010';s.textContent='Menzil sınırına yaklaşılıyor';v.style.color='#d4a020';ic.style.stroke='#d4a020';lbl.style.color='#d4a020';lbl.textContent='Zayıf';}
+  else{b.className='wb';dot.style.display='none';lbl.style.color='#12b84e';lbl.textContent='Güçlü';}
+}
+function dc(){
+  var W=330,H=60,mn=-95,mx=-40,rng=mx-mn;
+  cx2.clearRect(0,0,W,H);
+  var pts=lH.slice(-HL);if(pts.length<2)return;
+  var step=W/(pts.length-1),wy=H-((LC-mn)/rng)*H;
+  cx2.fillStyle='rgba(196,48,48,.04)';cx2.fillRect(0,wy,W,H-wy);
+  cx2.setLineDash([4,4]);cx2.strokeStyle='rgba(196,48,48,.15)';cx2.lineWidth=1;
+  cx2.beginPath();cx2.moveTo(0,wy);cx2.lineTo(W,wy);cx2.stroke();cx2.setLineDash([]);
+  var last=pts[pts.length-1],col=rc(last),rgb=hr(col);
+  var gr=cx2.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,'rgba('+rgb.r+','+rgb.g+','+rgb.b+',.14)');gr.addColorStop(1,'rgba('+rgb.r+','+rgb.g+','+rgb.b+',0)');
+  cx2.beginPath();pts.forEach(function(v,i){var x=i*step,y=H-((v-mn)/rng)*H;if(i===0)cx2.moveTo(x,y);else cx2.lineTo(x,y);});
+  cx2.lineTo((pts.length-1)*step,H);cx2.lineTo(0,H);cx2.closePath();cx2.fillStyle=gr;cx2.fill();
+  cx2.beginPath();pts.forEach(function(v,i){var x=i*step,y=H-((v-mn)/rng)*H;if(i===0)cx2.moveTo(x,y);else cx2.lineTo(x,y);});
+  cx2.strokeStyle=col;cx2.lineWidth=1.8;cx2.lineJoin='round';cx2.stroke();
+  var ex=(pts.length-1)*step,ey=H-((last-mn)/rng)*H;
+  cx2.beginPath();cx2.arc(ex,ey,3,0,Math.PI*2);cx2.fillStyle=col;cx2.fill();
+}
+
+// ── Bağlantı Durumu ───────────────────────────────────────────────────────
+function setStatus(s){
+  var dot=document.getElementById('statusDot'),txt=document.getElementById('statusText');
+  if(s==='ok'){dot.style.background='#12b84e';txt.style.color='#12b84e';txt.textContent='AKTİF';}
+  else if(s==='error'){dot.style.background='#c43030';txt.style.color='#c43030';txt.textContent='BAĞLANAMADI';}
+  else{dot.style.background='#d4a020';txt.style.color='#d4a020';txt.textContent='BAĞLANIYOR';}
+}
+
+// ── Firebase ──────────────────────────────────────────────────────────────
+var FB_URL='https://aog-orman-koruma-default-rtdb.firebaseio.com/sicaklik.json';
+function fetchFirebase(){
+  fetch(FB_URL,{mode:'cors',cache:'no-store'})
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(function(data){
+      setStatus('ok');
+      if(data&&data.deger!==undefined){
+        var t=parseFloat(data.deger);
+        document.getElementById('tempVal').textContent=t.toFixed(1);
+        upd=0;
+        var txEl=document.getElementById('txTempVal');if(txEl)txEl.textContent=t.toFixed(1)+'°C';
+        var txBar=document.getElementById('txTempBar');if(txBar)txBar.style.width=Math.min(100,(t/60*100)).toFixed(0)+'%';
+        var txSt=document.getElementById('txStatus');
+        if(txSt){txSt.textContent=t>=60?'Kritik':t>=45?'Dikkat':'Aktif';txSt.className='ns '+(t>=45?'er':'ok');}
+        if(t>=60){document.getElementById('alarmOk').style.opacity='.4';document.getElementById('alarmCr').style.opacity='1';}
+        else{document.getElementById('alarmOk').style.opacity='1';document.getElementById('alarmCr').style.opacity='.4';}
       }
-      ctx.stroke();
-    }
-
-    // 2. RSSI Signal Chart
-    const rssiCanvas = document.getElementById('rssi-chart');
-    if (rssiCanvas) {
-      const ctx = rssiCanvas.getContext('2d');
-      const w = rssiCanvas.clientWidth;
-      const h = rssiCanvas.clientHeight;
-      rssiCanvas.width = w; rssiCanvas.height = h;
-      
-      ctx.clearRect(0, 0, w, h);
-      ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
-      for(let i=0; i<w; i+=w/6) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
-      for(let i=0; i<h; i+=h/4) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
-
-      ctx.strokeStyle = '#a21caf'; ctx.lineWidth = 2; ctx.beginPath();
-      for(let i=0; i<rssiData.length; i++) {
-        const x = (i / (rssiData.length - 1)) * w;
-        // Map -120dBm to -40dBm to height
-        const val = rssiData[i];
-        const y = h - ((val - (-120)) / 80) * h;
-        if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      if(data&&data.rssi!==undefined){
+        var r=Math.round(data.rssi);
+        lC=r;lH.push(r);if(lH.length>HL)lH.shift();
+        document.getElementById('loraVal').textContent=r;
+        document.getElementById('loraVal').style.color=rc(r);
+        ug(r);uw(r);dc();
+        var rxBar=document.getElementById('rxRssiBar');
+        if(rxBar){var q=rq(r);rxBar.style.width=q.toFixed(0)+'%';rxBar.style.background=rc(r);}
+        var rxSt=document.getElementById('rxStatus');
+        if(rxSt){rxSt.textContent=r<=-85?'Kritik':r<=-75?'Zayıf':'Online';rxSt.className='ns '+(r<=-75?'er':'ok');}
       }
-      ctx.stroke();
-    }
-  }
+    })
+    .catch(function(e){console.warn('Firebase:',e);setStatus('error');});
+}
+setStatus('connecting');
+fetchFirebase();
+setInterval(fetchFirebase,5000);
 
-  // Switch tabs
-  function switchTab(tabId, element) {
-    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    
-    document.getElementById(tabId).classList.add('active');
-    element.classList.add('active');
-    activeTab = tabId;
+// ── Kaplama Kayıt ─────────────────────────────────────────────────────────
+var coatings=[];
+function fmtDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+var today=new Date();
+var d1=new Date(today);d1.setDate(d1.getDate()-3);
+coatings.push({node:'AOG-TX',date:fmtDate(d1),formula:'Standart Mix (Aloe+PK+YK)',note:'İlk uygulama'});
+document.getElementById('coatDate').value=fmtDate(today);
+var MN=['OCA','ŞUB','MAR','NİS','MAY','HAZ','TEM','AĞU','EYL','EKİ','KAS','ARA'];
+function dBw(ds){var d=new Date(ds),n=new Date();n.setHours(0,0,0,0);return Math.floor((n-d)/86400000);}
+function rBadge(days){var r=7-days;if(days>=7)return '<span class="rnb due">Yenileme gerekli</span>';if(days>=5)return '<span class="rnb soon">'+r+' gün kaldı</span>';return '<span class="rnb ok">'+r+' gün kaldı</span>';}
+function renderCoatings(){
+  var l=document.getElementById('coatingList'),n=document.getElementById('noCoating');
+  if(!coatings.length){l.innerHTML='';n.style.display='block';return;}
+  n.style.display='none';
+  l.innerHTML=coatings.slice().sort(function(a,b){return new Date(b.date)-new Date(a.date);}).map(function(c){
+    var d=new Date(c.date),days=dBw(c.date);
+    return '<div class="ce"><div class="cdb"><div class="cday">'+d.getDate()+'</div><div class="cmon">'+MN[d.getMonth()]+'</div></div><div><div class="cnl">'+c.node+'</div><div class="cdt">'+c.formula+'</div>'+(c.note?'<div class="cdt" style="color:#b8c4b0;">'+c.note+'</div>':'')+rBadge(days)+'</div></div>';
+  }).join('');
+}
+function addCoating(){
+  var date=document.getElementById('coatDate').value;
+  if(!date){alert('Lütfen tarih seçin');return;}
+  coatings.push({node:document.getElementById('coatNode').value,date:date,formula:document.getElementById('coatFormula').value,note:document.getElementById('coatNote').value.trim()});
+  document.getElementById('coatNote').value='';
+  document.getElementById('coatDate').value=fmtDate(new Date());
+  renderCoatings();
+}
+renderCoatings();
 
-    if(tabId === 'harita-tab' && map) {
-      setTimeout(() => { map.invalidateSize(); }, 200);
-    } else if(tabId === 'telemetri-tab') {
-      setTimeout(drawCanvasCharts, 100);
-    }
-  }
-
-  // Toggle Theme
-  function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('aog-theme', newTheme);
-    if(activeTab === 'telemetri-tab') drawCanvasCharts();
-  }
-
-  // Clear log screen
-  function clearLogs() {
-    document.getElementById('terminal').innerHTML = `<div class="terminal-line"><span class="terminal-time">[${new Date().toLocaleTimeString()}]</span> Terminal temizlendi. Dinleme devam ediyor...</div>`;
-  }
-
-  // Format uptime string
-  function formatUptime(secs) {
-    const h = Math.floor(secs / 3600).toString().padStart(2, '0');
-    const m = Math.floor((secs % 3600) / 60).toString().padStart(2, '0');
-    const s = (secs % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${s}`;
-  }
-
-  // Initialize Leaflet Map safely
-  function initSystemMap() {
-    try {
-      const rxCoords = [41.0258, 28.9744];
-      const txCoords = [41.0295, 28.9810];
-
-      map = L.map('map-wrapper').setView([41.0276, 28.9777], 15);
-      
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(map);
-
-      // Create Custom Colored Icons
-      const greenIcon = L.divIcon({
-        html: '<div style="background-color:#10b981; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 0 8px rgba(0,0,0,0.4);"></div>',
-        className: 'custom-pin', iconSize: [14, 14]
-      });
-
-      const purpleIcon = L.divIcon({
-        html: '<div style="background-color:#a21caf; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 0 8px rgba(0,0,0,0.4);"></div>',
-        className: 'custom-pin', iconSize: [14, 14]
-      });
-
-      rxMarker = L.marker(rxCoords, {icon: purpleIcon}).addTo(map).bindPopup('<b>AOG Gateway İstasyonu (RX)</b><br>ESP32-P4 Ana Bilgisayar');
-      txMarker = L.marker(txCoords, {icon: greenIcon}).addTo(map).bindPopup('<b>Orman İçi Verici Düğüm (TX-01)</b><br>ESP32-S3 / ADXL355 / MAX6675');
-
-      rfPolyline = L.polyline([rxCoords, txCoords], {
-        color: '#10b981', weight: 3, dashArray: '6, 6', opacity: 0.8
-      }).addTo(map);
-
-    } catch (e) {
-      document.getElementById('map-wrapper').innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted);">Harita yüklenemedi. İnternet bağlantınızı kontrol edin veya CDN engellerini inceleyin.</div>`;
-    }
-  }
-
-  // Live Background Loop: Feeds mock data into UI mimicking live physical hardware
-  setInterval(() => {
-    // 1. Update Uptime & General Counters
-    systemUptimeSeconds++;
-    document.getElementById('rx-uptime').innerText = formatUptime(systemUptimeSeconds);
-    
-    if (Math.random() > 0.3) {
-      packetCounter++;
-      document.getElementById('rx-packets').innerText = packetCounter;
-    }
-
-    // 2. Fluctuating Sensor Metrics
-    let currentTemp = (24.0 + Math.sin(Date.now() / 20000) * 1.2 + Math.random() * 0.15).toFixed(1);
-    let currentTilt = (1.1 + Math.random() * 0.15).toFixed(2);
-    let currentX = (Math.random() * 0.04 - 0.02).toFixed(3);
-    let currentY = (Math.random() * 0.04 - 0.02).toFixed(3);
-    let currentZ = (0.97 + Math.random() * 0.04).toFixed(3);
-    let currentRSSI = Math.floor(-66 - Math.random() * 5);
-    let currentSNR = (9.0 + Math.random() * 1.2).toFixed(1);
-
-    if(activeTab === 'telemetri-tab') {
-      document.getElementById('tx-temp').innerHTML = `${currentTemp}<span class="metric-unit">°C</span>`;
-      document.getElementById('tx-tilt').innerHTML = `${currentTilt}<span class="metric-unit">°</span>`;
-      document.getElementById('tx-acc-x').innerHTML = `${currentX}<span class="metric-unit">g</span>`;
-      document.getElementById('tx-acc-y').innerHTML = `${currentY}<span class="metric-unit">g</span>`;
-      document.getElementById('tx-acc-z').innerHTML = `${currentZ}<span class="metric-unit">g</span>`;
-      document.getElementById('rx-rssi').innerHTML = `${currentRSSI}<span class="metric-unit">dBm</span>`;
-      document.getElementById('rx-snr').innerHTML = `${currentSNR}<span class="metric-unit">dB</span>`;
-
-      // Append data arrays for line chart representation
-      accelData.push(parseFloat(currentZ));
-      accelData.shift();
-      rssiData.push(currentRSSI);
-      rssiData.shift();
-      drawCanvasCharts();
-    }
-
-    // 3. Log Output Simulation (Hex Structure Decomposition)
-    if (Math.random() > 0.6) {
-      const term = document.getElementById('terminal');
-      if (term) {
-        let hexStr = "0x" + Array.from({length: 8}, () => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
-        let logLine = document.createElement('div');
-        logLine.className = 'terminal-line';
-        logLine.innerHTML = `<span class="terminal-time">[${new Date().toLocaleTimeString()}]</span> <span style="color:#a3e635;">[LoRa RX]</span> Paket alındı -> ${hexStr} | Çözümlenen Sıcaklık: ${currentTemp}°C, Eğim: ${currentTilt}°`;
-        term.appendChild(logLine);
-        if (term.childNodes.length > 40) term.removeChild(term.firstChild);
-        term.scrollTop = term.scrollHeight;
-      }
-    }
-  }, 1200);
-
-  // Trigger PWA Setup Scripts on boot
-  (function initPwaInfrastructure() {
-    // Generate inline manifest dynamic blob url to keep it inside single file
-    const manifest = {
-      name: "Akıllı Orman Gözlemcisi Kontrol Paneli",
-      short_name: "AOG",
-      start_url: "./",
-      display: "standalone",
-      background_color: "#f4f7f6",
-      theme_color: "#12b84e",
-      icons: [
-        { src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%2312b84e'/><path d='M256 100 L380 340 L132 340 Z' fill='white'/></svg>", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
-      ]
-    };
-    const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-    document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
-
-    // Register active local client caching service worker script via data uri representation
-    if('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE_NAME = 'aog-v2';
-        self.addEventListener('install', e => {
-          self.skipWaiting();
-        });
-        self.addEventListener('fetch', e => {
-          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
-        });
-      `;
-      const swBlob = new Blob([swCode], {type: 'application/javascript'});
-      navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
-    }
-
-    // Apply remembered theme setting configuration
-    const savedTheme = localStorage.getItem('aog-theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  })();
-
-  // App initialization hook window events
-  window.addEventListener('DOMContentLoaded', () => {
-    initSystemMap();
+// ── Leaflet Harita ────────────────────────────────────────────────────────
+var LLAT=37.8746,LLNG=32.4932,leafMap,phoneM,loraM,dLine;
+function calcDist(a,b,c,d){var R=6371000,dLat=(c-a)*Math.PI/180,dLng=(d-b)*Math.PI/180,x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+function fmtDist(m){return m<1000?m.toFixed(0)+' m':(m/1000).toFixed(2)+' km';}
+function initMap(){
+  leafMap=L.map('leafletMap',{zoomControl:false,attributionControl:false}).setView([LLAT,LLNG],13);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(leafMap);
+  var txIco=L.divIcon({className:'',html:'<div style="width:12px;height:12px;background:#c43030;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,.2);"></div>',iconSize:[12,12],iconAnchor:[6,6]});
+  var rxIco=L.divIcon({className:'',html:'<div style="width:10px;height:10px;background:#2468b0;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,.2);"></div>',iconSize:[10,10],iconAnchor:[5,5]});
+  loraM=L.marker([LLAT,LLNG],{icon:txIco,draggable:true}).addTo(leafMap).bindPopup('<b>AOG-TX</b><br>Verici Sensör<br>ESP32-S3 + MAX6675 + LoRa TX');
+  var rxLat=LLAT+0.008,rxLng=LLNG+0.005;
+  L.marker([rxLat,rxLng],{icon:rxIco}).addTo(leafMap).bindPopup('<b>AOG-RX</b><br>Alıcı Düğüm<br>ESP32 + LoRa RX + Firebase');
+  L.polyline([[LLAT,LLNG],[rxLat,rxLng]],{color:'#2468b0',weight:1,dashArray:'4,4',opacity:.4}).addTo(leafMap);
+  loraM.on('dragend',function(e){
+    var lat=e.target.getLatLng().lat,lng=e.target.getLatLng().lng;
+    LLAT=lat;LLNG=lng;loraM.openPopup();
+    if(phoneM){if(dLine)leafMap.removeLayer(dLine);var pll=phoneM.getLatLng();dLine=L.polyline([[pll.lat,pll.lng],[lat,lng]],{color:'#12b84e',weight:1.5,dashArray:'5,5',opacity:.5}).addTo(leafMap);document.getElementById('distVal').textContent=fmtDist(calcDist(pll.lat,pll.lng,lat,lng));}
   });
-</script>
+  var pIco=L.divIcon({className:'',html:'<div style="width:12px;height:12px;background:#2468b0;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,.2);"></div>',iconSize:[12,12],iconAnchor:[6,6]});
+  document.getElementById('phoneGps').textContent=LLAT.toFixed(5)+', '+LLNG.toFixed(5);
+  if(navigator.geolocation){
+    navigator.geolocation.watchPosition(function(pos){
+      var lat=pos.coords.latitude,lng=pos.coords.longitude;
+      if(!phoneM){phoneM=L.marker([lat,lng],{icon:pIco}).addTo(leafMap).bindPopup('<b>Telefonunuz</b>');}else phoneM.setLatLng([lat,lng]);
+      if(dLine)leafMap.removeLayer(dLine);
+      dLine=L.polyline([[lat,lng],[LLAT,LLNG]],{color:'#12b84e',weight:1.5,dashArray:'5,5',opacity:.5}).addTo(leafMap);
+      document.getElementById('distVal').textContent=fmtDist(calcDist(lat,lng,LLAT,LLNG));
+      document.getElementById('phoneGps').textContent=lat.toFixed(5)+', '+lng.toFixed(5);
+      leafMap.fitBounds([[lat,lng],[LLAT,LLNG]],{padding:[20,20]});
+    },function(){document.getElementById('phoneGps').textContent='Konum izni yok';},{enableHighAccuracy:true,timeout:10000});
+  }
+}
+window.addEventListener('load',function(){initMap();});
 
+// ── PWA Manifest ──────────────────────────────────────────────────────────
+(function(){
+  var m={name:"AOG – Akıllı Orman Gözlemcisi",short_name:"AOG",start_url:"./",display:"standalone",background_color:"#F2F6F9",theme_color:"#F2F6F9",lang:"tr",
+    icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%23f6f8f4'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='%2312b84e' stroke-width='40'/%3E%3Cpath d='M256 116L256 256L340 340' stroke='%23c43030' stroke-width='36' stroke-linecap='round' fill='none'/%3E%3C/svg%3E",sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
+  document.getElementById('pwa-manifest').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));
+})();
+// ── Service Worker ────────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  var sw="const C='aog-v2';const A=['./','https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'];self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(A).catch(()=>{}))));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k))))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>new Response('Offline',{status:503})))));";
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(function(){});
+}
+</script>
 </body>
 </html>

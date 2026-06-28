@@ -8,9 +8,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AOG">
 <meta name="application-name" content="AOG">
-<meta name="theme-color" content="#10b981">
+<meta name="theme-color" content="#12b84e">
 <meta name="description" content="Akıllı Orman Gözlemcisi - IoT Orman Yangın Erken Uyarı Sistemi">
-<meta name="msapplication-TileColor" content="#10b981">
+<meta name="msapplication-TileColor" content="#12b84e">
 <link rel="manifest" id="pwa-manifest">
 <title>AOG – Akıllı Orman Gözlemcisi Kontrol Paneli</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
     --brand-dark: #047857;
     --brand-light: #e6f4ea;
     --accent-red: #ef4444;
-    --accent-blue: #2563eb;
+    --accent-orange: #f59e0b;
     --border-color: #e2e8f0;
     --radius-lg: 16px;
     --radius-md: 12px;
@@ -46,7 +46,6 @@
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --border-color: #334155;
-    --brand-light: rgba(16, 185, 129, 0.15);
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
@@ -280,7 +279,7 @@
   }
 
   #map-wrapper {
-    height: 520px;
+    height: 500px;
     border-radius: var(--radius-lg);
     overflow: hidden;
     border: 1px solid var(--border-color);
@@ -293,7 +292,7 @@
     font-family: var(--font-mono);
     padding: 16px;
     border-radius: var(--radius-md);
-    height: 380px;
+    height: 280px;
     overflow-y: auto;
     font-size: 0.85rem;
     border: 1px solid #334155;
@@ -344,53 +343,6 @@
     background-color: var(--bg-primary);
   }
 
-  .drive-integration-card {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    color: #ffffff;
-    padding: 24px;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-md);
-  }
-
-  .drive-info h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #f8fafc;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .drive-info p {
-    font-size: 0.875rem;
-    color: #94a3b8;
-    margin-top: 6px;
-  }
-
-  .btn-drive {
-    background-color: #22c55e;
-    color: white;
-    font-weight: 600;
-    padding: 12px 20px;
-    border-radius: var(--radius-md);
-    text-decoration: none;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-  }
-
-  .btn-drive:hover {
-    background-color: #16a34a;
-    transform: translateY(-1px);
-  }
-
   .chart-canvas {
     width: 100%;
     height: 180px;
@@ -399,37 +351,62 @@
     border-radius: var(--radius-md);
   }
 
+  .table-responsive {
+    overflow-x: auto;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+  }
+
+  th {
+    background-color: var(--bg-primary);
+    padding: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+  }
+
+  tr:hover td {
+    background-color: var(--brand-light);
+  }
+
   .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
     margin-top: 16px;
   }
 
   .gallery-item {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
-    padding: 16px;
+    padding: 12px;
     background-color: var(--bg-surface);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
     text-align: center;
     box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-  }
-
-  .gallery-item:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
   }
 
   .gallery-icon {
-    width: 54px;
-    height: 54px;
+    width: 60px;
+    height: 60px;
     background-color: var(--bg-primary);
-    border-radius: var(--radius-md);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -438,15 +415,12 @@
   }
 
   .gallery-title {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 500;
     word-break: break-all;
     color: var(--text-main);
-    height: 38px;
+    height: 36px;
     overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
   }
 
   @keyframes pulse {
@@ -457,11 +431,9 @@
 
   @media (max-width: 768px) {
     main { flex-direction: column; }
-    nav.sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 12px; gap: 4px; }
-    .nav-item { padding: 8px 12px; font-size: 0.85rem; white-space: nowrap; }
+    nav.sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 12px; }
     .content-viewport { padding: 16px; }
     .header-logo span { display: none; }
-    .drive-integration-card { flex-direction: column; gap: 16px; text-align: center; }
   }
 </style>
 </head>
@@ -473,13 +445,13 @@
       <div class="logo-icon">AOG</div>
       <div class="header-title">
         <h1>Akıllı Orman Gözlemcisi</h1>
-        <p>IoT Erken Uyarı &amp; Karbonizasyon Takip Sistemi</p>
+        <p>IoT Erken Uyarı &amp; Koruyucu Bariyer Sistemi</p>
       </div>
     </div>
     <div class="system-badges">
       <div class="status-badge online">
         <span class="dot"></span>
-        <span>LoRa Bağlantısı Aktif (1 TX / 1 RX)</span>
+        <span>Sistem Aktif</span>
       </div>
       <button class="btn btn-outline" id="theme-toggle" onclick="toggleTheme()" style="padding: 6px 12px;">🌓</button>
     </div>
@@ -489,8 +461,9 @@
     <nav class="sidebar">
       <div class="nav-item active" onclick="switchTab('harita-tab', this)">🗺️ Coğrafi İzleme</div>
       <div class="nav-item" onclick="switchTab('telemetri-tab', this)">📊 Sensör Telemetrisi</div>
+      <div class="nav-item" onclick="switchTab('kaplama-tab', this)">🧪 Koruyucu Kaplama</div>
       <div class="nav-item" onclick="switchTab('log-tab', this)">📜 Sistem Günlükleri</div>
-      <div class="nav-item" onclick="switchTab('donanim-tab', this)">📂 Proje Klasörü &amp; Galeri</div>
+      <div class="nav-item" onclick="switchTab('donanim-tab', this)">🛠️ Donanım &amp; Galeri</div>
     </nav>
 
     <div class="content-viewport">
@@ -499,13 +472,13 @@
         <div class="card">
           <div class="card-header">
             <h3 class="card-title">📡 Canlı LoRa Topolojisi &amp; Konum Takibi</h3>
-            <span style="font-size: 0.85rem; color: var(--text-muted);">Görüş Hattı (LoS) RF İletişim Analizi</span>
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Mesafe ve Görüş Hattı (LoS) Analizi</span>
           </div>
           <div id="map-wrapper"></div>
           <div style="margin-top: 14px; display: flex; gap: 16px; flex-wrap: wrap;">
-            <div class="status-badge" style="background:#fae8ff; color:#a21caf;"><strong>Merkezi Alıcı (RX Gateway):</strong> 41.0258° N, 28.9744° E</div>
-            <div class="status-badge" style="background:#e6f4ea; color:#047857;"><strong>Orman Gözlem Düğümü (TX Node):</strong> 41.0295° N, 28.9810° E</div>
-            <div class="status-badge" style="background:#e0f2fe; color:#0369a1;"><strong>Aktif İletişim Hattı:</strong> ~685 Metre (Point-to-Point)</div>
+            <div class="status-badge" style="background:#e0f2fe; color:#0369a1;"><strong>RX İstasyonu:</strong> 41.0258° N, 28.9744° E</div>
+            <div class="status-badge" style="background:#fef3c7; color:#b45309;"><strong>TX Verici Düğüm:</strong> 41.0295° N, 28.9810° E</div>
+            <div class="status-badge" style="background:#bbf7d0; color:#15803d;"><strong>RF Mesafe:</strong> ~685 Metre</div>
           </div>
         </div>
       </div>
@@ -515,10 +488,10 @@
           
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">🌲 Orman Gözlem Verici Düğümü (TX)</h3>
-              <span class="status-badge online" style="font-size:0.75rem;">ESP32-S3 Core</span>
+              <h3 class="card-title">🌲 Transmitter Düğümü (TX-01)</h3>
+              <span class="status-badge online" style="font-size:0.75rem;">ESP32-S3</span>
             </div>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">ADXL355 Yüksek Hassasiyetli İvmeölçer &amp; MAX6675 Termokupl Telemetrisi</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">ADXL355 İvmeölçer ve MAX6675 Isılçift Verileri</p>
             
             <div class="metric-group">
               <div class="metric-card">
@@ -527,36 +500,36 @@
               </div>
               <div class="metric-card">
                 <span class="metric-label">Eğim Açısı</span>
-                <span class="metric-value" id="tx-tilt">1.22<span class="metric-unit">°</span></span>
+                <span class="metric-value" id="tx-tilt">1.2<span class="metric-unit">°</span></span>
               </div>
               <div class="metric-card">
                 <span class="metric-label">X Eksen İvme</span>
-                <span class="metric-value" id="tx-acc-x">0.021<span class="metric-unit">g</span></span>
+                <span class="metric-value" id="tx-acc-x">0.02<span class="metric-unit">g</span></span>
               </div>
               <div class="metric-card">
                 <span class="metric-label">Y Eksen İvme</span>
-                <span class="metric-value" id="tx-acc-y">-0.014<span class="metric-unit">g</span></span>
+                <span class="metric-value" id="tx-acc-y">-0.01<span class="metric-unit">g</span></span>
               </div>
               <div class="metric-card">
                 <span class="metric-label">Z Eksen İvme</span>
-                <span class="metric-value" id="tx-acc-z">0.992<span class="metric-unit">g</span></span>
+                <span class="metric-value" id="tx-acc-z">0.99<span class="metric-unit">g</span></span>
               </div>
               <div class="metric-card">
-                <span class="metric-label">TX Pil Seviyesi</span>
-                <span class="metric-value" id="tx-bat">3.95<span class="metric-unit">V</span></span>
+                <span class="metric-label">Pil Gerilimi</span>
+                <span class="metric-value" id="tx-bat">3.92<span class="metric-unit">V</span></span>
               </div>
             </div>
             
-            <h4 style="margin-top:16px; font-size:0.9rem; font-weight: 600;">ADXL355 Canlı Titreşim Grafiği (Z-Axis)</h4>
+            <h4 style="margin-top:16px; font-size:0.9rem;">ADXL355 Canlı Titreşim Grafiği</h4>
             <canvas id="accel-chart" class="chart-canvas"></canvas>
           </div>
 
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">🎛️ Merkezi Alıcı İstasyon (RX Gateway)</h3>
-              <span class="status-badge online" style="font-size:0.75rem; background:#fae8ff; color:#a21caf;">ESP32-P4 Server</span>
+              <h3 class="card-title">🎛️ Gateway Alıcı İstasyon (RX-Merkez)</h3>
+              <span class="status-badge online" style="font-size:0.75rem; background:#fae8ff; color:#a21caf;">ESP32-P4</span>
             </div>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">LoRa Noktadan Noktaya (P2P) RF Sinyal Kalitesi &amp; Ağ Durumu</p>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">LoRa RF Link Sinyal Kalitesi &amp; Ağ Sağlığı</p>
             
             <div class="metric-group">
               <div class="metric-card">
@@ -569,26 +542,103 @@
               </div>
               <div class="metric-card">
                 <span class="metric-label">Paket Hata Oranı (PER)</span>
-                <span class="metric-value" id="rx-per">0.12<span class="metric-unit">%</span></span>
+                <span class="metric-value" id="rx-per">0.2<span class="metric-unit">%</span></span>
               </div>
               <div class="metric-card">
                 <span class="metric-label">Alınan Toplam Paket</span>
-                <span class="metric-value" id="rx-packets">1452</span>
+                <span class="metric-value" id="rx-packets">1428</span>
               </div>
               <div class="metric-card">
-                <span class="metric-label">İşlemci Yükü (Dual Core)</span>
-                <span class="metric-value">12<span class="metric-unit">%</span></span>
+                <span class="metric-label">İşlemci Yükü (Çift Çekirdek)</span>
+                <span class="metric-value">14<span class="metric-unit">%</span></span>
               </div>
               <div class="metric-card">
-                <span class="metric-label">Sistem Uptime</span>
-                <span class="metric-value" style="font-size:1.15rem;" id="rx-uptime">03:12:04</span>
+                <span class="metric-label">Çalışma Süresi (Uptime)</span>
+                <span class="metric-value" style="font-size:1.15rem;" id="rx-uptime">02:44:12</span>
               </div>
             </div>
             
-            <h4 style="margin-top:16px; font-size:0.9rem; font-weight: 600;">RF Alınan Sinyal Gücü Trendi (RSSI)</h4>
+            <h4 style="margin-top:16px; font-size:0.9rem;">RF Sinyal Trendi (RSSI)</h4>
             <canvas id="rssi-chart" class="chart-canvas"></canvas>
           </div>
 
+        </div>
+      </div>
+
+      <div id="kaplama-tab" class="tab-panel">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">🧪 Doğal Bazlı Koruyucu Kaplama Termal Analiz Sonuçları</h3>
+            <span style="font-size:0.85rem; font-weight:600; color:var(--brand-dark);">Yıldız Teknik Üniversitesi Merkez Lab. Raporu</span>
+          </div>
+          <p style="font-size:0.9rem; color:var(--text-muted);">
+            Projemizde ağaçları ve sensör kutularımızı dış yangın risklerine karşı izole etmek amacıyla geliştirdiğimiz <strong>Aloe vera jeli, çam (pinha) kabuğu tozu, yumurta kabuğu tozu ve ksantan gam</strong> içerikli biopolimer bariyer kaplamanın TGA-DSC ve FTIR test verileri aşağıda entegre edilmiştir.
+          </p>
+
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Numune Tipi &amp; Açıklaması</th>
+                  <th>Toplam Kütle Kaybı (25-600°C)</th>
+                  <th>600°C'de Kalan Kalıntı (Char)</th>
+                  <th>Ana DTG Pik Sıcaklığı</th>
+                  <th>Maksimum Bozunma Hızı (DTG Şiddeti)</th>
+                  <th>Yarı Bozunma Sıcaklığı (T₅₀)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Numune A:</strong> Karışımın Kendisi (Kuru Toz)</td>
+                  <td>%3.27</td>
+                  <td>%96.71</td>
+                  <td>429.9°C</td>
+                  <td>-0.17 %/dk</td>
+                  <td>Ulaşılamadı (&gt;600°C)</td>
+                </tr>
+                <tr>
+                  <td><strong>Numune B:</strong> Kontrol Ahşap (Kaplamasız)</td>
+                  <td>%83.34</td>
+                  <td>%16.66</td>
+                  <td>399.2°C</td>
+                  <td>-20.28 %/dk</td>
+                  <td>396.8°C</td>
+                </tr>
+                <tr>
+                  <td><strong>Numune C:</strong> Taze Kaplanmış Ahşap (~6 Günlük)</td>
+                  <td>%78.90</td>
+                  <td>%21.05</td>
+                  <td>424.2°C</td>
+                  <td>-6.81 %/dk</td>
+                  <td>392.3°C</td>
+                </tr>
+                <tr>
+                  <td><strong>Numune D:</strong> Yaşlandırılmış Kaplanmış Ahşap (~3.5 Aylık)</td>
+                  <td>%81.29</td>
+                  <td>%18.71</td>
+                  <td>437.9°C</td>
+                  <td>-8.93 %/dk</td>
+                  <td>411.9°C</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="background-color: var(--bg-primary); padding: 16px; border-radius: var(--radius-md); margin-top: 20px; border-left: 4px solid var(--brand-color);">
+            <h4 style="font-size:0.95rem; margin-bottom:6px;">🔬 Çapraz Analiz Bulguları ve Bilimsel Çıkarım:</h4>
+            <ul style="font-size:0.875rem; padding-left:20px; display:flex; flex-direction:column; gap:6px; color:var(--text-main);">
+              <li><strong>Termal Bariyer Etkisi:</strong> Kaplama uygulanmış taze ahşapta (Numune C), kaplamasız oduna (Numune B) kıyasla ana yanma pik sıcaklığı <strong>399.2°C'den 424.2°C'ye (+25°C)</strong> yükselmiştir.</li>
+              <li><strong>Kinetik Geciktirme:</strong> Kontrol ahşabın maksimum kütle kaybı hızı <strong>-20.28 %/dk</strong> iken kaplama ile bu değer 3 kat azalarak <strong>-6.81 %/dk</strong> seviyesine indirilmiş, ani tutuşma engellenmiştir.</li>
+              <li><strong>Kimyasal İmzalar (FTIR Maskeleme):</strong> FTIR spektrumlarında, kaplamasız ahşapta 1026 cm⁻¹ konumunda görülen keskin selüloz C-O gerilme bandı, taze kaplamada (C) tamamen maskelenmiştir. 3.5 ay dış ortamda yaşlandırılan numunede (D) ise bu bant 1017 cm⁻¹ konumunda tekrar belirerek kaplamanın zamanla mikron düzeyinde inceldiğini kanıtlamaktadır.</li>
+              <li><strong>Karbonat Katkısı:</strong> Karışımın kendisinde (A) 600°C'de %96.71 gibi devasa bir kalıntı kalmasının nedeni yumurta kabuğundan gelen kalsiyum karbonattır (CaCO₃). FTIR'daki 667 cm⁻¹ CO₃²⁻ bükülme bandı bunu desteklemektedir.</li>
+            </ul>
+          </div>
+
+          <div style="margin-top: 20px; text-align: center;">
+            <a href="Analiz.pdf" class="btn btn-primary" download="AOG_Detayli_Laboratuvar_Analiz_Raporu.pdf">
+              📥 YTÜ Analiz Raporunu İndir (Analiz.pdf)
+            </a>
+          </div>
         </div>
       </div>
 
@@ -598,33 +648,22 @@
             <h3 class="card-title">📜 Canlı LoRa Telemetri Terminali &amp; Paket Kod Çözücü</h3>
             <button class="btn btn-outline" style="padding:4px 10px; font-size:0.8rem;" onclick="clearLogs()">Temizle</button>
           </div>
-          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">TX Verici düğümünden RF kanalı üzerinden gelen ham ikili (binary) paket yapıları hex dökümü olarak çözümlenmektedir.</p>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">Düğümlerden gelen ham ikili (binary) LoRa paket paket yapılarının hex dökümü çözümlenmektedir.</p>
           <div class="terminal-box" id="terminal">
-            <div class="terminal-line"><span class="terminal-time">[15:35:01]</span> [SİSTEM] AOG Gateway Alıcı İstasyon başlatıldı. ESP32-P4 RF dinleme modunda.</div>
-            <div class="terminal-line"><span class="terminal-time">[15:35:03]</span> [LoRa] Frekans kanalı doğrulandı: 868.1 MHz, SF7, BW 125kHz, CR 4/5.</div>
+            <div class="terminal-line"><span class="terminal-time">[15:35:01]</span> [SİSTEM] AOG Gateway Alıcı İstasyon başlatıldı. ESP32-P4 radyo dinleme modunda.</div>
+            <div class="terminal-line"><span class="terminal-time">[15:35:03]</span> [LoRa] Frekans bandı ayarlandı: 868.1 MHz, SF7, BW 125kHz, CR 4/5.</div>
           </div>
         </div>
       </div>
 
       <div id="donanim-tab" class="tab-panel">
-        
-        <div class="drive-integration-card">
-          <div class="drive-info">
-            <h3>📂 Google Drive Proje Klasörü (Okuma/Görüntüleme Linki)</h3>
-            <p>Akıllı Orman Gözlemcisi projesine ait teknik dökümanlar, laboratuvar çalışma dosyaları ve veri setlerinin bulunduğu bulut klasörü.</p>
-          </div>
-          <a href="https://drive.google.com/drive/folders/1Ldbj2rwmT8WFP-oo0lL7QtR9L6nCOYMi?usp=sharing" target="_blank" class="btn-drive">
-            📂 Klasörü Görüntüle
-          </a>
-        </div>
-
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">🛠️ Proje Donanım Parçaları &amp; Teknik Görseller Arşivi</h3>
-            <span style="font-size:0.85rem; color:var(--text-muted);">Saha ve Laboratuvar Tasarım Kayıtları</span>
+            <h3 class="card-title">🛠️ Proje Donanım Parçaları &amp; Teknik Görseller Galetisi</h3>
+            <span style="font-size:0.85rem; color:var(--text-muted);">Sistem Tasarımına Ait Orijinal Dosyalar</span>
           </div>
-          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom: 8px;">
-            Aşağıda, AOG projesinde kullanılan özel üretim çok katmanlı baskı devre kartları (PCB), test ortamları ve donanım bileşenlerine ait yüksek çözünürlüklü görseller listelenmiştir. Üzerlerine tıklayarak orijinal dosyaları yerel diskine indirebilirsiniz.
+          <p style="font-size:0.9rem; color:var(--text-muted);">
+            Aşağıda, Akıllı Orman Gözlemcisi (AOG) projesinde kullanılan özel üretim çok katmanlı baskı devre kartları (PCB), test ortamları ve donanım bileşenlerine ait yüksek çözünürlüklü görseller listelenmiştir. Üzerlerine tıklayarak orijinal dosyaları doğrudan indirebilirsiniz.
           </p>
 
           <div class="gallery-grid">
@@ -663,22 +702,23 @@
 </div>
 
 <script>
-  // Global Uygulama Durum Yönetimi
+  // Global App State Management
   let activeTab = 'harita-tab';
   let map, txMarker, rxMarker, rfPolyline;
   
-  // Çizim Grafikleri İçin Geçmiş Veri Dizileri (Simülasyon Beslemesi)
+  // Real-time Simulation History Arrays for Custom Canvas Charts
   let accelData = Array(30).fill(0).map(() => (Math.random() * 0.04 + 0.98));
   let rssiData = Array(30).fill(-68);
-  let packetCounter = 1452;
-  let systemUptimeSeconds = 11524;
+  let packetCounter = 1428;
+  let systemUptimeSeconds = 9852;
 
-  // Yerel HTML5 Canvas Çizim Motoru
+  // Custom Chart Drawer Engine (Native HTML5 Canvas implementation)
   function drawCanvasCharts() {
     const isDark = document.body.parentElement.getAttribute('data-theme') === 'dark';
     const gridColor = isDark ? '#334155' : '#e2e8f0';
+    const textColor = isDark ? '#94a3b8' : '#64748b';
 
-    // 1. İvmeölçer Canlı Grafiği
+    // 1. Accelerometer Chart
     const accCanvas = document.getElementById('accel-chart');
     if (accCanvas) {
       const ctx = accCanvas.getContext('2d');
@@ -687,13 +727,16 @@
       accCanvas.width = w; accCanvas.height = h;
       
       ctx.clearRect(0, 0, w, h);
+      // Draw Grid
       ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
       for(let i=0; i<w; i+=w/6) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
       for(let i=0; i<h; i+=h/4) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
 
+      // Draw Data Line
       ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2; ctx.beginPath();
       for(let i=0; i<accelData.length; i++) {
         const x = (i / (accelData.length - 1)) * w;
+        // Map 0.8g - 1.2g to height
         const val = accelData[i];
         const y = h - ((val - 0.8) / 0.4) * h;
         if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
@@ -701,7 +744,7 @@
       ctx.stroke();
     }
 
-    // 2. RSSI Sinyal Kalitesi Grafiği
+    // 2. RSSI Signal Chart
     const rssiCanvas = document.getElementById('rssi-chart');
     if (rssiCanvas) {
       const ctx = rssiCanvas.getContext('2d');
@@ -717,6 +760,7 @@
       ctx.strokeStyle = '#a21caf'; ctx.lineWidth = 2; ctx.beginPath();
       for(let i=0; i<rssiData.length; i++) {
         const x = (i / (rssiData.length - 1)) * w;
+        // Map -120dBm to -40dBm to height
         const val = rssiData[i];
         const y = h - ((val - (-120)) / 80) * h;
         if(i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
@@ -725,7 +769,7 @@
     }
   }
 
-  // Sekme Değiştirme Mantığı
+  // Switch tabs
   function switchTab(tabId, element) {
     document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -741,7 +785,7 @@
     }
   }
 
-  // Tema Değiştirici (Aydınlık / Karanlık Mod)
+  // Toggle Theme
   function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -750,12 +794,12 @@
     if(activeTab === 'telemetri-tab') drawCanvasCharts();
   }
 
-  // Terminal Günlüklerini Temizleme
+  // Clear log screen
   function clearLogs() {
-    document.getElementById('terminal').innerHTML = `<div class="terminal-line"><span class="terminal-time">[${new Date().toLocaleTimeString()}]</span> Terminal günlük tamponu temizlendi. İzleniyor...</div>`;
+    document.getElementById('terminal').innerHTML = `<div class="terminal-line"><span class="terminal-time">[${new Date().toLocaleTimeString()}]</span> Terminal temizlendi. Dinleme devam ediyor...</div>`;
   }
 
-  // Sistem Çalışma Süresi Formatlayıcı
+  // Format uptime string
   function formatUptime(secs) {
     const h = Math.floor(secs / 3600).toString().padStart(2, '0');
     const m = Math.floor((secs % 3600) / 60).toString().padStart(2, '0');
@@ -763,7 +807,7 @@
     return `${h}:${m}:${s}`;
   }
 
-  // Harita Yapılandırması (1 TX - 1 RX Link Modeli)
+  // Initialize Leaflet Map safely
   function initSystemMap() {
     try {
       const rxCoords = [41.0258, 28.9744];
@@ -775,6 +819,7 @@
         attribution: '© OpenStreetMap contributors'
       }).addTo(map);
 
+      // Create Custom Colored Icons
       const greenIcon = L.divIcon({
         html: '<div style="background-color:#10b981; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 0 8px rgba(0,0,0,0.4);"></div>',
         className: 'custom-pin', iconSize: [14, 14]
@@ -785,20 +830,21 @@
         className: 'custom-pin', iconSize: [14, 14]
       });
 
-      rxMarker = L.marker(rxCoords, {icon: purpleIcon}).addTo(map).bindPopup('<b>AOG Gateway İstasyonu (RX)</b><br>ESP32-P4 Sunucu Terminali');
-      txMarker = L.marker(txCoords, {icon: greenIcon}).addTo(map).bindPopup('<b>Verici Orman Düğümü (TX)</b><br>ESP32-S3 Verici Terminali');
+      rxMarker = L.marker(rxCoords, {icon: purpleIcon}).addTo(map).bindPopup('<b>AOG Gateway İstasyonu (RX)</b><br>ESP32-P4 Ana Bilgisayar');
+      txMarker = L.marker(txCoords, {icon: greenIcon}).addTo(map).bindPopup('<b>Orman İçi Verici Düğüm (TX-01)</b><br>ESP32-S3 / ADXL355 / MAX6675');
 
       rfPolyline = L.polyline([rxCoords, txCoords], {
         color: '#10b981', weight: 3, dashArray: '6, 6', opacity: 0.8
       }).addTo(map);
 
     } catch (e) {
-      document.getElementById('map-wrapper').innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted);">Coğrafi harita motoru başlatılamadı. İnternet bağlantısını doğrulayın.</div>`;
+      document.getElementById('map-wrapper').innerHTML = `<div style="padding:40px; text-align:center; color:var(--text-muted);">Harita yüklenemedi. İnternet bağlantınızı kontrol edin veya CDN engellerini inceleyin.</div>`;
     }
   }
 
-  // Canlı Arka Plan Donanım Simülasyon Döngüsü
+  // Live Background Loop: Feeds mock data into UI mimicking live physical hardware
   setInterval(() => {
+    // 1. Update Uptime & General Counters
     systemUptimeSeconds++;
     document.getElementById('rx-uptime').innerText = formatUptime(systemUptimeSeconds);
     
@@ -807,13 +853,14 @@
       document.getElementById('rx-packets').innerText = packetCounter;
     }
 
-    let currentTemp = (24.1 + Math.sin(Date.now() / 22000) * 1.1 + Math.random() * 0.12).toFixed(1);
-    let currentTilt = (1.20 + Math.random() * 0.08).toFixed(2);
-    let currentX = (Math.random() * 0.03 - 0.015).toFixed(3);
-    let currentY = (Math.random() * 0.03 - 0.015).toFixed(3);
-    let currentZ = (0.98 + Math.random() * 0.02).toFixed(3);
-    let currentRSSI = Math.floor(-67 - Math.random() * 4);
-    let currentSNR = (9.3 + Math.random() * 0.9).toFixed(1);
+    // 2. Fluctuating Sensor Metrics
+    let currentTemp = (24.0 + Math.sin(Date.now() / 20000) * 1.2 + Math.random() * 0.15).toFixed(1);
+    let currentTilt = (1.1 + Math.random() * 0.15).toFixed(2);
+    let currentX = (Math.random() * 0.04 - 0.02).toFixed(3);
+    let currentY = (Math.random() * 0.04 - 0.02).toFixed(3);
+    let currentZ = (0.97 + Math.random() * 0.04).toFixed(3);
+    let currentRSSI = Math.floor(-66 - Math.random() * 5);
+    let currentSNR = (9.0 + Math.random() * 1.2).toFixed(1);
 
     if(activeTab === 'telemetri-tab') {
       document.getElementById('tx-temp').innerHTML = `${currentTemp}<span class="metric-unit">°C</span>`;
@@ -824,6 +871,7 @@
       document.getElementById('rx-rssi').innerHTML = `${currentRSSI}<span class="metric-unit">dBm</span>`;
       document.getElementById('rx-snr').innerHTML = `${currentSNR}<span class="metric-unit">dB</span>`;
 
+      // Append data arrays for line chart representation
       accelData.push(parseFloat(currentZ));
       accelData.shift();
       rssiData.push(currentRSSI);
@@ -831,50 +879,59 @@
       drawCanvasCharts();
     }
 
-    if (Math.random() > 0.65) {
+    // 3. Log Output Simulation (Hex Structure Decomposition)
+    if (Math.random() > 0.6) {
       const term = document.getElementById('terminal');
       if (term) {
         let hexStr = "0x" + Array.from({length: 8}, () => Math.floor(Math.random()*16).toString(16).toUpperCase()).join('');
         let logLine = document.createElement('div');
         logLine.className = 'terminal-line';
-        logLine.innerHTML = `<svg width="8" height="8" style="display:inline-block; margin-right:4px;"><circle cx="4" cy="4" r="3" fill="#10b981"/></svg><span class="terminal-time">[${new Date().toLocaleTimeString()}]</span> <span style="color:#10b981;">[LoRa P2P]</span> Paket Alındı -> ${hexStr} | Sıcaklık: ${currentTemp}°C, Eğim: ${currentTilt}°`;
+        logLine.innerHTML = `<span class="terminal-time">[${new Date().toLocaleTimeString()}]</span> <span style="color:#a3e635;">[LoRa RX]</span> Paket alındı -> ${hexStr} | Çözümlenen Sıcaklık: ${currentTemp}°C, Eğim: ${currentTilt}°`;
         term.appendChild(logLine);
-        if (term.childNodes.length > 50) term.removeChild(term.firstChild);
+        if (term.childNodes.length > 40) term.removeChild(term.firstChild);
         term.scrollTop = term.scrollHeight;
       }
     }
   }, 1200);
 
-  // PWA Manifest ve Servis Altyapısı Yapılandırması
+  // Trigger PWA Setup Scripts on boot
   (function initPwaInfrastructure() {
+    // Generate inline manifest dynamic blob url to keep it inside single file
     const manifest = {
       name: "Akıllı Orman Gözlemcisi Kontrol Paneli",
       short_name: "AOG",
       start_url: "./",
       display: "standalone",
       background_color: "#f4f7f6",
-      theme_color: "#10b981",
+      theme_color: "#12b84e",
       icons: [
-        { src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%2310b981'/><path d='M256 100 L380 340 L132 340 Z' fill='white'/></svg>", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+        { src: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%2312b84e'/><path d='M256 100 L380 340 L132 340 Z' fill='white'/></svg>", sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
       ]
     };
     const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
     document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
 
+    // Register active local client caching service worker script via data uri representation
     if('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'aog-v3';
-        self.addEventListener('install', e => self.skipWaiting());
-        self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+        const CACHE_NAME = 'aog-v2';
+        self.addEventListener('install', e => {
+          self.skipWaiting();
+        });
+        self.addEventListener('fetch', e => {
+          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+        });
       `;
       const swBlob = new Blob([swCode], {type: 'application/javascript'});
       navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
     }
 
+    // Apply remembered theme setting configuration
     const savedTheme = localStorage.getItem('aog-theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   })();
 
+  // App initialization hook window events
   window.addEventListener('DOMContentLoaded', () => {
     initSystemMap();
   });

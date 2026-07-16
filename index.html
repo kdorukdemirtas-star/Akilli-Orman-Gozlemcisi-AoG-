@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AOG">
 <meta name="theme-color" content="#F2F6F9">
-<link rel="manifest" id="pwa-manifest">
+<link rel="manifest" href="./manifest.json">
 <title>AOG – Akıllı Orman Gözlemcisi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -28,6 +28,8 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:
 .logo{height:33px;width:auto;}
 .hdr-sub{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t4);letter-spacing:.4px;}
 .badge{margin-left:auto;display:flex;align-items:center;gap:5px;background:#dff0e6;border:1px solid #b0d8be;padding:4px 10px;border-radius:16px;}
+.sb-status{display:flex;align-items:center;gap:5px;background:#e0f5e8;border:1px solid #b0dfc0;padding:3px 9px;border-radius:14px;}
+.sb-status-t{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--g);}
 .dot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:p 1.8s ease-in-out infinite;}
 @keyframes p{0%,100%{box-shadow:0 0 0 0 rgba(18,184,78,.35);}50%{box-shadow:0 0 0 4px rgba(18,184,78,0);}}
 .badge-t{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:500;color:var(--g);}
@@ -176,9 +178,9 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:
 <!-- STATUS BAR -->
 <div class="sb">
   <span class="sb-t" id="clk">09:41</span>
-  <div style="display:flex;align-items:center;gap:5px;background:#e0f5e8;border:1px solid #b0dfc0;padding:3px 9px;border-radius:14px;">
+  <div class="sb-status">
     <div class="dot" id="statusDot"></div>
-    <span id="statusText" style="font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:500;color:var(--g);">BAĞLANIYOR</span>
+    <span id="statusText" class="sb-status-t">BAĞLANIYOR</span>
   </div>
 </div>
 
@@ -289,7 +291,7 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:
       </div>
       <div class="nt" style="color:#2468b0;font-size:12px;" id="rxRssi">-- dBm</div>
       <div class="nb-w"><div class="nb ok" id="rxRssiBar" style="width:60%;background:#2468b0;"></div></div>
-      <div class="ns ok" id="rxStatus">Online</div>
+      <div class="ns ok" id="rxStatus">Çevrimiçi</div>
     </div>
   </div>
 </div></div>
@@ -634,7 +636,7 @@ function fetchSupabase(){
         var rxBar=document.getElementById('rxRssiBar');
         if(rxBar){var q=rq(r);rxBar.style.width=q.toFixed(0)+'%';rxBar.style.background=rc(r);}
         var rxSt=document.getElementById('rxStatus');
-        if(rxSt){rxSt.textContent=r<=-85?'Kritik':r<=-75?'Zayıf':'Online';rxSt.className='ns '+(r<=-75?'er':'ok');}
+        if(rxSt){rxSt.textContent=r<=-85?'Kritik':r<=-75?'Zayıf':'Çevrimiçi';rxSt.className='ns '+(r<=-75?'er':'ok');}
       }
     })
     .catch(function(e){console.warn('Supabase:',e);setStatus('error');});
@@ -706,16 +708,9 @@ function initMap(){
 }
 window.addEventListener('load',function(){initMap();});
 
-// ── PWA Manifest ──────────────────────────────────────────────────────────
-(function(){
-  var m={name:"AOG – Akıllı Orman Gözlemcisi",short_name:"AOG",start_url:"./",display:"standalone",background_color:"#F2F6F9",theme_color:"#F2F6F9",lang:"tr",
-    icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%23f6f8f4'/%3E%3Ccircle cx='256' cy='256' r='140' fill='none' stroke='%2312b84e' stroke-width='40'/%3E%3Cpath d='M256 116L256 256L340 340' stroke='%23c43030' stroke-width='36' stroke-linecap='round' fill='none'/%3E%3C/svg%3E",sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
-  document.getElementById('pwa-manifest').href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));
-})();
 // ── Service Worker ────────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  var sw="const C='aog-v2';const A=['./','https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css','https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'];self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(A).catch(()=>{}))));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k))))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>new Response('Offline',{status:503})))));";
-  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'application/javascript'}))).catch(function(){});
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
 }
 </script>
 </body>

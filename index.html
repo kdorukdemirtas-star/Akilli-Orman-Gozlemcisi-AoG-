@@ -206,7 +206,7 @@ html,body{height:100%;background:var(--bg);font-family:'Inter',sans-serif;color:
   </div>
   <div class="gps-row">
     <div class="gc"><div class="gc-l">TELEFON KONUMU</div><div class="gc-v" id="phoneGps">Konum alınıyor...</div></div>
-    <div class="gc"><div class="gc-l">LoRa SENSÖR (TX)</div><div class="gc-v">41.00820, 28.64960</div></div>
+    <div class="gc"><div class="gc-l">LoRa SENSÖR (TX)</div><div class="gc-v">41.06639, 28.68628</div></div>
   </div>
   <div class="sc">
     <div class="sc-h">
@@ -678,16 +678,16 @@ function addCoating(){
 renderCoatings();
 
 // ── Leaflet Harita ────────────────────────────────────────────────────────
-var LLAT=41.0082,LLNG=28.6496,leafMap,phoneM,loraM,dLine;
+var LLAT=41.06639,LLNG=28.68628,leafMap,phoneM,loraM,dLine;
 function calcDist(a,b,c,d){var R=6371000,dLat=(c-a)*Math.PI/180,dLng=(d-b)*Math.PI/180,x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 function fmtDist(m){return m<1000?m.toFixed(0)+' m':(m/1000).toFixed(2)+' km';}
 function initMap(){
-  leafMap=L.map('leafletMap',{zoomControl:false,attributionControl:false}).setView([LLAT,LLNG],13);
+  leafMap=L.map('leafletMap',{zoomControl:false,attributionControl:false}).setView([LLAT,LLNG],18);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(leafMap);
   var txIco=L.divIcon({className:'',html:'<div style="width:12px;height:12px;background:#c43030;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,.2);"></div>',iconSize:[12,12],iconAnchor:[6,6]});
   var rxIco=L.divIcon({className:'',html:'<div style="width:10px;height:10px;background:#2468b0;border:2px solid #fff;border-radius:50%;box-shadow:0 2px 5px rgba(0,0,0,.2);"></div>',iconSize:[10,10],iconAnchor:[5,5]});
   loraM=L.marker([LLAT,LLNG],{icon:txIco,draggable:true}).addTo(leafMap).bindPopup('<b>AOG-TX</b><br>Verici Sensör<br>Deneyap Kart 1A v2 + MAX6675 + LoRa TX');
-  var rxLat=LLAT+0.008,rxLng=LLNG+0.005;
+  var rxLat=41.06628,rxLng=28.68622;
   L.marker([rxLat,rxLng],{icon:rxIco}).addTo(leafMap).bindPopup('<b>AOG-RX</b><br>Alıcı Düğüm<br>Deneyap Kart 1A v2 + LoRa RX + Supabase');
   L.polyline([[LLAT,LLNG],[rxLat,rxLng]],{color:'#2468b0',weight:1,dashArray:'4,4',opacity:.4}).addTo(leafMap);
   loraM.on('dragend',function(e){
